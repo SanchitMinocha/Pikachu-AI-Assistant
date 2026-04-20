@@ -1,0 +1,33 @@
+# SanchitAI – Python Dependencies
+# Install with: pip install -r requirements.txt
+
+# Web Framework
+flask>=3.0.0
+flask-cors>=4.0.0
+
+# WSGI Server (production)
+gunicorn>=21.2.0
+
+# RAG & Embeddings
+chromadb>=0.5.0
+fastembed>=0.3.0          # lightweight ONNX embeddings — no PyTorch needed
+
+# LLM & HTTP
+requests>=2.31.0
+
+# Environment Management
+python-dotenv>=1.0.0
+
+# --- Optional: Fine-Tuning (GPU recommended) ---
+# Uncomment to enable fine-tuning with scripts/fine_tune.py:
+# unsloth
+# transformers>=4.40.0
+# datasets>=2.18.0
+# peft>=0.10.0
+# trl>=0.8.0
+# accelerate>=0.28.0
+# bitsandbytes>=0.43.0
+# torch>=2.0.0
+
+# --- Optional: Web scraping for collect_web_data.py (already uses requests) ---
+# beautifulsoup4>=4.12.0

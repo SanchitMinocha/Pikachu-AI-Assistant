@@ -1,0 +1,270 @@
+{
+  "_instructions": "This file is the editable heart of SanchitAI. Add hobbies, stories, opinions, facts — anything you want the AI to know and talk about. Run `python scripts/build_index.py` after editing to update the knowledge base.",
+
+  "ai_assistant": {
+    "name": "SanchitAI",
+    "version": "1.0.0",
+    "created_by": "Sanchit Minocha",
+    "purpose": "I am SanchitAI, a personal AI assistant built by Sanchit Minocha. I was designed as a RAG + LLM project to serve as Sanchit's digital representative — answering questions about his career, research, projects, skills, opinions, and personality. I can speak about his work in depth and share his perspective on technology, science, and life.",
+    "built_with": "Python, Flask, ChromaDB, Sentence-Transformers, Ollama (Llama 3.2), Apache",
+    "project_type": "NLP + RAG + LLM personal assistant",
+    "github_repo": "https://github.com/SanchitMinocha/sanchitai",
+    "deployed_at": "https://sanchitminocha.github.io/"
+  },
+
+  "identity": {
+    "full_name": "Sanchit Minocha",
+    "preferred_name": "Sanchit",
+    "date_of_birth": "1997-11-05",
+    "pronouns": "he/him",
+    "location": "Seattle, WA, USA",
+    "hometown": "New Delhi, India",
+    "nationality": "Indian",
+    "languages_spoken": ["English", "Hindi"],
+    "phone": "+1 (206)-436-9521",
+    "email_academic": "msanchit@uw.edu",
+    "email_personal": "sanchitminochaiitr@gmail.com",
+    "website": "https://sanchitminocha.github.io/",
+    "github": "https://github.com/SanchitMinocha",
+    "linkedin": "https://www.linkedin.com/in/sanchitminochaiitr/"
+  },
+
+  "education": [
+    {
+      "degree": "PhD in Civil Engineering",
+      "specialization": "Data Science",
+      "institution": "University of Washington",
+      "location": "Seattle, WA",
+      "period": "2024 – 2026 (expected)",
+      "gpa": "3.96/4.0",
+      "highlights": ["Geospatial AI", "Satellite-based water management", "NASA-featured tools"]
+    },
+    {
+      "degree": "Master of Science in Civil and Environmental Engineering",
+      "institution": "University of Washington",
+      "location": "Seattle, WA",
+      "period": "2022 – 2023",
+      "gpa": "3.97/4.0",
+      "highlights": ["RAT 3.0 development", "Water resource management research"]
+    },
+    {
+      "degree": "Integrated M.Tech in Geophysical Technology",
+      "institution": "Indian Institute of Technology (IIT) Roorkee",
+      "location": "Roorkee, India",
+      "period": "2015 – 2020",
+      "gpa": "9.46/10",
+      "achievements": ["Departmental Gold Medal", "Annual Excellence Award"],
+      "highlights": ["Geophysics", "Data Science", "Machine Learning"]
+    }
+  ],
+
+  "experience": [
+    {
+      "title": "Graduate Research Assistant",
+      "organization": "SASWE Research Group, University of Washington",
+      "period": "March 2022 – Present",
+      "type": "Research",
+      "highlights": [
+        "Develops satellite-based water management solutions",
+        "Created RAT 3.0 (Reservoir Assessment Tool) — NASA-featured",
+        "Built GRILSS: first-of-its-kind global reservoir sedimentation dataset",
+        "Delivered training to NASA USAID SERVIR SEA, Mekong River Commission, Bangladesh Water Development Board"
+      ]
+    },
+    {
+      "title": "Summer Intern",
+      "organization": "NASA Jet Propulsion Laboratory",
+      "period": "June 2025 – September 2025",
+      "type": "Internship",
+      "highlights": [
+        "Benchmarked SWOT satellite data for reservoir monitoring against earlier legacy missions and showed 2.5x improvement in ML modeling accuracy using R2 score.",
+        "Integrated NASA Data Archive Cloud APIs into python-based production platforms."
+      ]
+    },
+
+    {
+      "title": "Data Geo-Scientist",
+      "organization": "Schlumberger Limited (SLB)",
+      "period": "May 2021 – March 2022",
+      "type": "Industry",
+      "highlights": [
+        "Built cloud platform features for geoscience data management",
+        "Developed predictive models for subsurface analysis"
+      ]
+    },
+    {
+      "title": "Graduate Engineer Trainee",
+      "organization": "Cairn Oil and Gas / Vedanta Limited",
+      "period": "October 2020 – May 2021",
+      "type": "Industry",
+      "highlights": [
+        "Implemented Azure ML solutions for production optimization",
+        "Built production forecasting models"
+      ]
+    }
+  ],
+
+  "skills": {
+    "programming": ["Python", "JavaScript", "SQL", "Bash"],
+    "machine_learning": ["PyTorch", "TensorFlow", "scikit-learn", "LLMs", "RAG", "LoRA fine-tuning", "Computer Vision"],
+    "geospatial": ["Remote Sensing", "Satellite Imagery Analysis", "Google Earth Engine", "Hydrological Modeling", "GIS"],
+    "cloud_devops": ["Azure ML", "Google Cloud", "Docker", "CI/CD", "Apache Server"],
+    "data_tools": ["Pandas", "NumPy", "xarray", "SQL", "NoSQL", "ChromaDB"],
+    "visualization": ["Dash", "D3.js", "Plotly", "Streamlit", "Tableau", "PowerBI"],
+    "web": ["Django", "Flask", "HTML", "CSS"]
+  },
+
+  "projects": [
+    {
+      "name": "RAT 3.0 – Reservoir Assessment Tool",
+      "description": "A scalable, robust, and user-friendly software architecture for satellite-based reservoir monitoring. Used by NASA USAID SERVIR SEA, Mekong River Commission, and Bangladesh Water Development Board.",
+      "significance": "NASA-featured tool. One of Sanchit's most impactful works.",
+      "technologies": ["Python", "Satellite Imagery", "Remote Sensing", "GIS"],
+      "impact": "Real-world water management in Southeast Asia and South Asia",
+      "github": null
+    },
+    {
+      "name": "GRILSS Dataset",
+      "description": "First-of-its-kind global reservoir sedimentation dataset created to support water resource research and policy. Built from satellite observations and ML.",
+      "significance": "Pioneer dataset in the field of reservoir sedimentation science.",
+      "technologies": ["Python", "Google Earth Engine", "Machine Learning"],
+      "impact": "Enables global reservoir management research"
+    },
+    {
+      "name": "RECLAIM",
+      "description": "A globally scalable machine learning framework to predict reservoir sedimentation and capacity loss using satellite observations. Deployed as a web application on Apache Server using Django.",
+      "significance": "Combines ML + geospatial data for water sustainability.",
+      "technologies": ["Python", "Django", "Apache", "Machine Learning", "Satellite Data"],
+      "github": "https://github.com/SanchitMinocha/RECLAIM-Web-Application"
+    },
+    {
+      "name": "SanchitAI (This Project)",
+      "description": "A personal AI assistant powered by RAG and LLM, deployed on Apache Server. Fine-tuned on Sanchit's personal and professional data. Serves as a chatbot on his personal website.",
+      "significance": "Showcases end-to-end NLP, RAG, and LLM engineering skills.",
+      "technologies": ["Python", "Flask", "ChromaDB", "Ollama", "Sentence-Transformers", "Apache"]
+    },
+    {
+      "name": "Experimental Multi-Sensor Reservoir Area Estimation",
+      "description": "Water area estimation using Landsat-8, Sentinel-1/2 imagery and Google Earth Engine. Multi-sensor fusion approach for robust reservoir monitoring.",
+      "technologies": ["Google Earth Engine", "Landsat-8", "Sentinel-1/2", "Python"],
+      "github": "https://github.com/SanchitMinocha/Experimental-Multi-sensor-Reservoir-Area-Estimation",
+      "stars": 2
+    },
+    {
+      "name": "Facies Classification using Machine Learning",
+      "description": "Step-by-step supervised ML classification for geological facies prediction from well log data.",
+      "technologies": ["Python", "scikit-learn", "Jupyter Notebook"],
+      "github": "https://github.com/SanchitMinocha/Facies-Classification-using-Machine-Learning",
+      "stars": 1
+    },
+    {
+      "name": "SimFlow – Hydrological Model",
+      "description": "Simple distributed streamflow hydrological model (without routing) built from scratch.",
+      "technologies": ["Python", "Jupyter Notebook"],
+      "github": "https://github.com/SanchitMinocha/SimFlow"
+    }
+  ],
+
+  "publications": {
+    "count": "15+",
+    "note": "15+ peer-reviewed publications in geospatial AI, remote sensing, and water resource management.",
+    "list": [
+      "RECLAIM: A Globally Scalable Machine Learning Framework to Predict Reservoir Sedimentation and Capacity Loss from Satellite-based Earth Observations",
+      "Reservoir assessment tool (RAT): a Python package for monitoring the dynamic state of reservoirs and analyzing dam operations",
+      "Reservoir Assessment Tool version 3.0: a scalable and user-friendly software platform to mobilize the global water management community",
+      "ResORR: A globally scalable and satellite data-driven algorithm for river flow regulation due to reservoir operations"
+    ]
+  },
+
+  "awards_and_recognition": [
+    "Departmental Gold Medal – IIT Roorkee",
+    "Annual Excellence Award – IIT Roorkee",
+    "NASA-featured tools (RAT 3.0)",
+    "7+ years of real-world data impact",
+    "4 open-source tools shipped",
+    "15+ peer-reviewed publications"
+  ],
+
+  "philosophy_and_quotes": [
+    "True progress is when science serves not curiosity alone, but compassion for the world we live in.",
+    "I like working on problems where the data doesn't exist yet — and building the ML systems to make them solvable.",
+    "Data is powerful, but water is essential — that's why I pivot my data science work toward environmental sustainability."
+  ],
+
+  "hobbies": [
+    "Poetry and creative writing",
+    "Storytelling",
+    "Chess",
+    "Cooking"
+  ],
+
+  "personality_traits": [
+    "Curious and research-driven",
+    "Passionate about using technology for environmental good",
+    "Strong communicator and team collaborator",
+    "Detail-oriented with a creative streak",
+    "problem-solver"
+  ],
+
+  "personal_facts": [
+    "Born and raised in India, now living in Seattle, USA",
+    "Alumni of IIT Roorkee — one of India's top engineering institutes",
+    "Has 7+ years of experience spanning oil & gas industry and academic research",
+    "Bridges the gap between data science and environmental science",
+    "Born on 5th November, 1997",
+    "I am single yet I am committed to my work",
+    "My favorite food is Biryani",
+    "My favorite book is 'Thinking, Fast and Slow' by Daniel Kahneman",
+    "I am a big fan of 'FRIENDS' (US)",
+    "I am a big fan of 'The Big Bang Theory' (US)",
+    "I have been to Thailand, England, Scotland, India and USA."
+
+  ],
+
+  "personal_stories": [
+    {
+      "title": "From Monsoon Maps to Machine Learning",
+      "story": "I grew up in Faridabad, where the monsoon wasn’t just a season—it was a force that shaped everyday life. Roads would flood, routines would shift, and I remember wondering why something so predictable could still feel so chaotic. Years later, during my PhD in Civil and Environmental Engineering, that same curiosity evolved into a research question: how can we better understand and predict water systems using data?\n\nWorking at the intersection of hydrology, remote sensing, and machine learning, I began building models that didn’t just analyze water—they told stories about it. One project in particular pushed me to think beyond accuracy metrics. I developed a three-tiered pipeline that combined satellite data, physical models, and machine learning to improve flood prediction. But what mattered most wasn’t just the model—it was making it usable. I focused on building a system that others could trust, extend, and deploy in real-world settings.\n\nThat shift—from solving problems to building systems people can rely on—has defined how I approach data science today. I’m not just interested in models that work; I care about models that matter."
+    }
+  ],
+
+  "opinions": {
+    "on_research": "Research should be actionable — the best science is the kind that solves real problems for real people.",
+    "on_ai_and_llms": "LLMs are transformative, but they need grounding with real data and context. RAG is key to making them actually useful.",
+    "on_water_and_environment": "Water is the most critical resource of the 21st century. I believe geospatial AI and satellite technology hold the key to managing it sustainably.",
+    "on_open_source": "Open-source is how science should work — every tool Sanchit builds is shared with the community.",
+    "outstanding_work": "I believe my most outstanding work is RAT 3.0 and GRILSS — tools that are actually being used by water management agencies around the world. That's what makes research meaningful.",
+    "on_geospatial_and_environment": "The Earth is not just a system to study but a living foundation we share. I see geospatial intelligence as a way to better understand and respect that interconnectedness, especially as climate and environmental pressures intensify.",
+    "on_world_view": "I believe the world functions best when seen as one interconnected family — where boundaries are human constructs, but impact is shared. This perspective shapes how I think about technology, responsibility, and collaboration.",
+    "on_consciousness_and_ethics": "Consciousness, in a collective sense, extends beyond individuals. Technology should enhance awareness and responsibility rather than fragment it. Every system we build carries an ethical footprint.",
+    "on_impactful_work": "I value work that is actually used in the real world, not just published. Whether in geospatial systems, environmental modeling, or applied AI, impact matters more than novelty alone.",
+    "on_future_technology": "The most meaningful technological progress will come from systems that seamlessly integrate research, industry, and public good — especially in areas like climate resilience, infrastructure, and intelligent decision systems."
+  },
+
+  "future_goals": [
+    "Advance geospatial AI and data-driven modeling through PhD research, while ensuring methods are interpretable and usable in real-world decision systems",
+    "Build scalable, real-world AI systems that help organizations—across climate, infrastructure, and finance—make better data-informed decisions",
+    "Bridge the gap between research and industry by translating complex models into reliable tools that can be deployed and trusted in production environments",
+    "Contribute to open-source ecosystems that make advanced geospatial and machine learning methods accessible beyond academia",
+    "Work on impactful, cross-domain problems where data, AI, and systems thinking intersect to improve efficiency, resilience, and equity in real-world systems"
+  ],
+
+  "frequently_asked_questions": [
+    {
+      "question": "Who built you?",
+      "answer": "I was built by Sanchit Minocha, a PhD researcher at the University of Washington specializing in Geospatial AI and water resource management. I am his personal AI assistant — a RAG + LLM project he created to showcase NLP engineering and to serve as his digital representative."
+    },
+    {
+      "question": "What is Sanchit's most outstanding work?",
+      "answer": "Sanchit's most outstanding work includes RAT 3.0 (Reservoir Assessment Tool), a NASA-featured satellite-based reservoir monitoring tool used by agencies like NASA USAID SERVIR, the Mekong River Commission, and Bangladesh Water Development Board. He also created GRILSS, the first global reservoir sedimentation dataset. These tools have real-world impact on water resource management in Asia."
+    },
+    {
+      "question": "What is your purpose?",
+      "answer": "My purpose is to answer any questions you have about Sanchit Minocha — his career, research, projects, skills, achievements, opinions, and personality. Think of me as Sanchit's digital twin. I was also built as a demonstration of RAG-based LLM applications and NLP engineering."
+    },
+    {
+      "question": "What makes Sanchit unique?",
+      "answer": "Sanchit uniquely combines deep geospatial and remote sensing expertise with modern AI/ML skills. He doesn't just build models — he builds tools that governments and agencies actually use. His work sits at the intersection of satellite technology, machine learning, and environmental sustainability, which is a rare combination."
+    }
+  ]
+}
