@@ -104,6 +104,44 @@ def load_markdown_files() -> List[Document]:
     return docs
 
 
+def _serialize_education(entry: dict) -> str:
+    parts = [f"Education: {entry.get('degree', '')}"]
+    if entry.get("specialization"):
+        parts[0] += f" (specialization: {entry['specialization']})"
+    parts.append(f"Institution: {entry.get('institution', '')} — {entry.get('location', '')}")
+    parts.append(f"Period: {entry.get('period', '')}")
+    if entry.get("gpa"):
+        parts.append(f"GPA: {entry['gpa']}")
+    if entry.get("achievements"):
+        parts.append(f"Achievements: {', '.join(entry['achievements'])}")
+    if entry.get("highlights"):
+        parts.append(f"Focus areas: {', '.join(entry['highlights'])}")
+    return "\n".join(parts)
+
+
+def _serialize_experience(entry: dict) -> str:
+    parts = [f"Experience: {entry.get('title', '')} at {entry.get('organization', '')}"]
+    parts.append(f"Period: {entry.get('period', '')} | Type: {entry.get('type', '')}")
+    for h in entry.get("highlights", []):
+        parts.append(f"- {h}")
+    return "\n".join(parts)
+
+
+def _serialize_project(entry: dict) -> str:
+    parts = [f"Project: {entry.get('name', '')}"]
+    if entry.get("description"):
+        parts.append(entry["description"])
+    if entry.get("significance"):
+        parts.append(f"Significance: {entry['significance']}")
+    if entry.get("impact"):
+        parts.append(f"Impact: {entry['impact']}")
+    if entry.get("technologies"):
+        parts.append(f"Technologies: {', '.join(entry['technologies'])}")
+    if entry.get("github"):
+        parts.append(f"GitHub: {entry['github']}")
+    return "\n".join(parts)
+
+
 def flatten_json_to_text(data, prefix="") -> List[str]:
     """Recursively convert JSON to readable text passages."""
     passages = []
@@ -120,6 +158,19 @@ def flatten_json_to_text(data, prefix="") -> List[str]:
         # Handle story entries
         if "title" in data and "story" in data:
             passages.append(f"{data['title']}: {data['story']}")
+            return passages
+
+        # Keep each education/experience/project entry as one self-contained chunk
+        if "degree" in data and "institution" in data:
+            passages.append(_serialize_education(data))
+            return passages
+
+        if "title" in data and "organization" in data:
+            passages.append(_serialize_experience(data))
+            return passages
+
+        if "name" in data and "description" in data and "technologies" in data:
+            passages.append(_serialize_project(data))
             return passages
 
         for k, v in data.items():
