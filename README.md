@@ -108,7 +108,7 @@ curl -X POST http://localhost:5050/api/chat \
 ## Quick Start
 
 ```bash
-git clone https://github.com/SanchitMinocha/sanchitai.git
+git clone https://github.com/SanchitMinocha/Pikachu-AI-Assistant.git
 cd sanchitai
 
 python3 -m venv venv && source venv/bin/activate
