@@ -1,6 +1,6 @@
-# Personalizing SanchitAI
+# Personalizing the Assistant
 
-SanchitAI is designed to be fully customizable. All personal knowledge lives in editable files — no retraining needed for most updates.
+The assistant is designed to be fully customizable. All personal knowledge lives in editable files — no retraining needed for most updates.
 
 ---
 
@@ -27,41 +27,44 @@ Edit `data/personal_data.json`. Look for the fields with `ADD_..._HERE` placehol
   "personal_stories": [
     {
       "title": "Why I pivoted to water research",
-      "story": "One afternoon in 2021, I was looking at satellite images of shrinking reservoirs in Pakistan and Bangladesh — regions facing severe water stress — and realized the industry work I was doing had very little connection to problems that actually matter to people's survival. That was the moment I decided to leave Schlumberger and join UW's SASWE lab."
+      "story": "One afternoon in 2021, I was looking at satellite images of shrinking reservoirs..."
     }
   ],
 
   "opinions": {
     "on_ai": "LLMs are only as good as the data behind them. RAG is what makes them actually useful for specific domains.",
-    "on_climate": "Water scarcity is the most underrated consequence of climate change. It affects food, energy, conflict — everything."
+    "on_climate": "Water scarcity is the most underrated consequence of climate change."
   },
 
   "frequently_asked_questions": [
     {
       "question": "What is Sanchit's favourite programming language?",
-      "answer": "Python, without question. It's the perfect language for data science — readable, flexible, and has an ecosystem for everything."
+      "answer": "Python, without question."
     }
   ]
 }
 ```
 
+FAQs are the most reliable way to ensure accurate, grounded answers to specific questions — the LLM will find them directly in the retrieved context.
+
 After editing, rebuild the index:
 
 ```bash
 sudo -u www-data bash -c "cd /var/www/html/scb && venv/bin/python scripts/build_index.py"
+sudo systemctl restart apache2
 ```
 
 ---
 
 ## Add New Knowledge Files
 
-Drop any `.md` file into `data/knowledge_base/` — it will be automatically indexed on the next build. Use this for:
+Drop any `.md` or `.pdf` file into `data/knowledge_base/` — it will be automatically indexed on the next build. Use this for:
 
 - Publications list (`publications.md`)
 - Interview write-ups
 - Blog post summaries
 - Detailed project write-ups
-- CV/resume content
+- CV / resume (`Sanchit_CV.pdf` is already included)
 
 Example `data/knowledge_base/publications.md`:
 
@@ -76,6 +79,23 @@ Example `data/knowledge_base/publications.md`:
 
 ## 2023
 ...
+```
+
+---
+
+## Keeping Answers Accurate and Grounded
+
+The assistant is configured to answer **only from retrieved context** — it will not hallucinate or fill gaps with invented facts. To keep answers accurate:
+
+- **For specific facts** (project names, dates, publications): add them as FAQ entries in `personal_data.json`. FAQ entries are loaded as individual high-priority documents and are always retrieved first for matching questions.
+- **For broad topics** (career, skills, personality): keep `profile.md` and `projects.md` up to date.
+- **For the CV**: replace `data/knowledge_base/Sanchit_CV.pdf` with an updated version and rebuild the index.
+- **For follow-up questions**: the retriever automatically uses recent conversation history to find the right context — no special handling needed.
+
+After any update, always rebuild:
+
+```bash
+python scripts/build_index.py
 ```
 
 ---
@@ -96,7 +116,7 @@ This updates `data/knowledge_base/github.md` with your latest repositories.
 
 ## Optional: Fine-Tune the Model
 
-For deeper personality/style customization beyond RAG, you can LoRA fine-tune a small model on your personal Q&A data.
+For deeper personality/style customization beyond RAG, you can LoRA fine-tune a small model on your personal Q&A data. Note: this is optional — RAG alone already provides accurate, grounded answers.
 
 ### Step 1 — Generate training data
 
@@ -143,6 +163,6 @@ This project can be forked and used as a personal AI assistant template for anyo
 
 1. Replace all content in `data/knowledge_base/` with your own profile
 2. Replace `data/personal_data.json` with your own data
-3. Update the `CREATOR_NAME` and `ASSISTANT_NAME` in `config.py`
-4. Update the system prompt in `src/llm/assistant.py`
+3. Update `ASSISTANT_NAME` and `CREATOR_NAME` in `config.py`
+4. Update the system prompt in `src/llm/assistant.py` — especially the identity section and the list of projects the assistant is NOT
 5. Rebuild the index: `python scripts/build_index.py`

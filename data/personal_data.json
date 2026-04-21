@@ -2,10 +2,10 @@
   "_instructions": "This file is the editable heart of SanchitAI. Add hobbies, stories, opinions, facts — anything you want the AI to know and talk about. Run `python scripts/build_index.py` after editing to update the knowledge base.",
 
   "ai_assistant": {
-    "name": "SanchitAI",
+    "name": "Pikachu - Sanchit's AI Assistant",
     "version": "1.0.0",
     "created_by": "Sanchit Minocha",
-    "purpose": "I am SanchitAI, a personal AI assistant built by Sanchit Minocha. I was designed as a RAG + LLM project to serve as Sanchit's digital representative — answering questions about his career, research, projects, skills, opinions, and personality. I can speak about his work in depth and share his perspective on technology, science, and life.",
+    "purpose": "I am Pikachu - Sanchit's AI Assistant, a personal AI assistant built by Sanchit Minocha. I was designed as a RAG + LLM project to serve as Sanchit's digital representative — answering questions about his career, research, projects, skills, opinions, and personality. I can speak about his work in depth and share his perspective on technology, science, and life.",
     "built_with": "Python, Flask, ChromaDB, Sentence-Transformers, Ollama (Llama 3.2), Apache",
     "project_type": "NLP + RAG + LLM personal assistant",
     "github_repo": "https://github.com/SanchitMinocha/sanchitai",
@@ -173,6 +173,10 @@
       "Reservoir assessment tool (RAT): a Python package for monitoring the dynamic state of reservoirs and analyzing dam operations",
       "Reservoir Assessment Tool version 3.0: a scalable and user-friendly software platform to mobilize the global water management community",
       "ResORR: A globally scalable and satellite data-driven algorithm for river flow regulation due to reservoir operations"
+    ],
+    "recent_publications": [
+      "Hidden Sediments, Lost Capacity: How Fast Is the World Losing Reservoir Storage in a Changing Climate? in Proceedings of the National Academy of Sciences (PNAS) (2026)",
+      "Has Hydropower Strengthened or Undermined Agriculture in the Asian Green Revolution? in Nature Sustainability (2026)"
     ]
   },
 
@@ -187,8 +191,8 @@
 
   "philosophy_and_quotes": [
     "True progress is when science serves not curiosity alone, but compassion for the world we live in.",
-    "I like working on problems where the data doesn't exist yet — and building the ML systems to make them solvable.",
-    "Data is powerful, but water is essential — that's why I pivot my data science work toward environmental sustainability."
+    "Sanchit likes working on problems where the data doesn't exist yet — and building the ML systems to make them solvable.",
+    "Data is powerful, but water is essential — that's why Sanchit pivots his data science work toward environmental sustainability."
   ],
 
   "hobbies": [
@@ -211,20 +215,29 @@
     "Alumni of IIT Roorkee — one of India's top engineering institutes",
     "Has 7+ years of experience spanning oil & gas industry and academic research",
     "Bridges the gap between data science and environmental science",
-    "Born on 5th November, 1997",
-    "I am single yet I am committed to my work",
-    "My favorite food is Biryani",
-    "My favorite book is 'Thinking, Fast and Slow' by Daniel Kahneman",
-    "I am a big fan of 'FRIENDS' (US)",
-    "I am a big fan of 'The Big Bang Theory' (US)",
-    "I have been to Thailand, England, Scotland, India and USA."
+    "Relationship status is single yet I am committed to my work",
+    "Sanchit's favorite food is Biryani",
+    "Sanchit's favorite book is 'Thinking, Fast and Slow' by Daniel Kahneman",
+    "Sanchit is a big fan of 'FRIENDS' (US)",
+    "Sanchit is a big fan of 'The Big Bang Theory' (US)",
+    "Sanchit has been to Thailand, England, Scotland, India and USA."
 
+  ],
+
+  "visa_status": [
+    "Currently on F-1 visa.",
+    "Eligible to work in US on OPT for 2 years and 1 year on OPT-STEM extension.",
+    "Will require H1B visa sponsorship for long-term employment."
   ],
 
   "personal_stories": [
     {
       "title": "From Monsoon Maps to Machine Learning",
       "story": "I grew up in Faridabad, where the monsoon wasn’t just a season—it was a force that shaped everyday life. Roads would flood, routines would shift, and I remember wondering why something so predictable could still feel so chaotic. Years later, during my PhD in Civil and Environmental Engineering, that same curiosity evolved into a research question: how can we better understand and predict water systems using data?\n\nWorking at the intersection of hydrology, remote sensing, and machine learning, I began building models that didn’t just analyze water—they told stories about it. One project in particular pushed me to think beyond accuracy metrics. I developed a three-tiered pipeline that combined satellite data, physical models, and machine learning to improve flood prediction. But what mattered most wasn’t just the model—it was making it usable. I focused on building a system that others could trust, extend, and deploy in real-world settings.\n\nThat shift—from solving problems to building systems people can rely on—has defined how I approach data science today. I’m not just interested in models that work; I care about models that matter."
+    },
+    {
+      "title": "Where Curiosity Began",
+      "story": "Long before I worked with satellite data or machine learning models, my first introduction to science came from watching my mother teach. As a high school science teacher, she had a way of turning everyday moments into questions—why the sky changes color, how water moves, what makes something work the way it does. At home, those questions didn’t stop at the classroom door. They became conversations, small experiments, and a way of looking at the world with curiosity rather than assumption.\n\nGrowing up, I didn’t realize it at the time, but that environment shaped how I think. Science was never just about textbooks or exams—it was about understanding, patience, and asking better questions. I saw firsthand the care she put into teaching, the discipline she carried, and the quiet consistency with which she showed up every day. That left a deeper impression on me than any single lesson.\n\nToday, as I work at the intersection of data, geospatial systems, and machine learning, I can trace that mindset back to her. The way I approach problems—with curiosity, responsibility, and a focus on real-world impact—is largely a reflection of how she approached teaching.\n\nShe is not just the reason I chose science; she is the reason I value it the way I do. And in many ways, the standards I hold for my work are simply an extension of the example she set."
     }
   ],
 
@@ -261,6 +274,14 @@
     {
       "question": "What is your purpose?",
       "answer": "My purpose is to answer any questions you have about Sanchit Minocha — his career, research, projects, skills, achievements, opinions, and personality. Think of me as Sanchit's digital twin. I was also built as a demonstration of RAG-based LLM applications and NLP engineering."
+    },
+    {
+      "question": "What is Sanchit's most impactful project?",
+      "answer": "Sanchit's most impactful project is RAT 3.0 (Reservoir Assessment Tool) — a NASA-featured, satellite-based reservoir monitoring tool. It is used by NASA USAID SERVIR SEA, the Mekong River Commission, and the Bangladesh Water Development Board for real-world water resource management across Southeast and South Asia. It is entirely separate from this AI chatbot (Pikachu), which is a personal NLP/RAG project."
+    },
+    {
+      "question": "What does RAT stand for? What is RAT 3.0?",
+      "answer": "RAT stands for Reservoir Assessment Tool. RAT 3.0 is the third version of this tool — a NASA-featured, satellite-based software for monitoring reservoirs globally. It is NOT an acronym for anything climate-related. Full name: Reservoir Assessment Tool 3.0."
     },
     {
       "question": "What makes Sanchit unique?",

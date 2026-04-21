@@ -11,6 +11,7 @@ gunicorn>=21.2.0
 # RAG & Embeddings
 chromadb>=0.5.0
 fastembed>=0.3.0          # lightweight ONNX embeddings — no PyTorch needed
+pypdf>=4.0.0              # PDF text extraction for knowledge_base/*.pdf
 
 # LLM & HTTP
 requests>=2.31.0

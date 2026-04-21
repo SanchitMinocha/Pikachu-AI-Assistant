@@ -46,16 +46,16 @@ CHUNK_SIZE = 500
 CHUNK_OVERLAP = 50
 
 # --- RAG ---
-TOP_K_RESULTS = 5
+TOP_K_RESULTS = 7
 SIMILARITY_THRESHOLD = 0.3
 
 # --- API ---
 MAX_HISTORY_TURNS = 6   # number of conversation turns to keep
-MAX_NEW_TOKENS = 300
+MAX_NEW_TOKENS = 500
 TEMPERATURE = 0.7
 SECRET_KEY = os.getenv("SECRET_KEY", "sanchitai-secret-change-in-prod")
 API_KEY = os.getenv("API_KEY", "")   # optional: protect /rebuild-index endpoint
 
 # --- Identity (kept here for quick reference, full data in personal_data.json) ---
-ASSISTANT_NAME = "SanchitAI"
+ASSISTANT_NAME = "Pikachu - Sanchit's AI Assistant"
 CREATOR_NAME = "Sanchit Minocha"

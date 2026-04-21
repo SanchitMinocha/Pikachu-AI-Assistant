@@ -1,4 +1,4 @@
-# SanchitAI – Personal AI Assistant
+# Pikachu – Sanchit's AI Assistant
 
 > A RAG + LLM personal chatbot API deployed on Apache Server.
 > Built by **[Sanchit Minocha](https://sanchitminocha.github.io/)** as an end-to-end NLP engineering project.
@@ -6,17 +6,17 @@
 [![Python](https://img.shields.io/badge/Python-3.10+-blue)](https://python.org)
 [![Flask](https://img.shields.io/badge/Flask-3.0-green)](https://flask.palletsprojects.com)
 [![ChromaDB](https://img.shields.io/badge/VectorDB-ChromaDB-orange)](https://trychroma.com)
-[![Ollama](https://img.shields.io/badge/LLM-Ollama%20%2B%20Groq-purple)](https://ollama.com)
+[![Groq](https://img.shields.io/badge/LLM-Groq%20%2B%20Ollama-purple)](https://groq.com)
 [![Apache](https://img.shields.io/badge/Server-Apache%20mod__wsgi-red)](https://httpd.apache.org)
 
 ---
 
-## What is SanchitAI?
+## What is Pikachu?
 
-SanchitAI is a personal AI assistant that answers questions about Sanchit Minocha — his research, career, projects, opinions, and personality. It is deployed as a REST API and integrated as a chatbot on his [personal website](https://sanchitminocha.github.io/).
+Pikachu is Sanchit's personal AI assistant — it answers questions about Sanchit Minocha: his research, career, projects, opinions, and personality. It is deployed as a REST API and integrated as a chatbot on his [personal website](https://sanchitminocha.github.io/).
 
 Ask it things like:
-- *"What is Sanchit's most outstanding work?"*
+- *"What is Sanchit's most impactful project?"*
 - *"What does Sanchit think about LLMs and RAG?"*
 - *"Tell me about RAT 3.0."*
 - *"What are his hobbies?"*
@@ -25,16 +25,17 @@ Ask it things like:
 
 ## How It Works
 
-SanchitAI uses **Retrieval-Augmented Generation (RAG)**. When you ask a question:
+Pikachu uses **Retrieval-Augmented Generation (RAG)**. When you ask a question:
 
 1. Your question is converted to a semantic vector (fastembed, ONNX)
 2. ChromaDB finds the most relevant chunks from the knowledge base
-3. Those chunks are injected as context into an LLM prompt
-4. The LLM generates a grounded, human-like response
+3. Those chunks are injected as numbered, labelled context into an LLM prompt
+4. The LLM generates a grounded, strictly context-bound response
 
 **LLM backends** (with automatic fallback):
-- **Primary:** Groq API — Llama 3.1 8B (fast, free cloud)
-- **Fallback:** Local Ollama — phi3:mini (always available, no internet needed)
+- **Primary:** Groq API — Llama 3.3 70B Versatile (fast, accurate, free tier)
+- **Fallback 1:** Local Ollama — phi3:mini (no internet needed)
+- **Fallback 2:** HuggingFace Inference API (optional)
 
 For a deeper technical explanation → [docs/architecture.md](docs/architecture.md)
 
@@ -45,21 +46,49 @@ For a deeper technical explanation → [docs/architecture.md](docs/architecture.
 ### `POST /api/chat`
 
 ```bash
-curl -X POST https://yourserver.com/scb/api/chat \
+curl -k -X POST https://yourserver.com/scb/api/chat \
   -H "Content-Type: application/json" \
   -d '{
     "message": "Who is Sanchit Minocha?",
-    "model": "phi3:mini",          // optional — overrides default, falls back if unavailable
-    "conversation_id": "abc-123",  // optional — enables multi-turn conversation
-    "top_k": 5                     // optional — number of RAG results (default 5)
+    "conversation_id": "abc-123",
+    "top_k": 7,
+    "max_tokens": 500,
+    "model": "llama-3.3-70b-versatile"
   }'
 ```
+
+**Request fields:**
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `message` | string | required | The question to ask |
+| `conversation_id` | string | auto-generated | Pass back the returned ID to continue a conversation |
+| `top_k` | int | 7 | Number of RAG chunks to retrieve (max 10) |
+| `max_tokens` | int | 500 | Maximum tokens in the response |
+| `model` | string | from `.env` | Override the LLM (see accepted values below) |
+
+**Accepted `model` values:**
+
+| Value | Backend | Notes |
+|-------|---------|-------|
+| `llama-3.3-70b-versatile` | Groq | Best quality — recommended default |
+| `llama-3.1-70b-versatile` | Groq | Good quality |
+| `llama-3.1-8b-instant` | Groq | Fast, lower accuracy |
+| `llama3-8b-8192` | Groq | Groq-hosted Llama 3 8B |
+| `llama3-70b-8192` | Groq | Groq-hosted Llama 3 70B |
+| `mixtral-8x7b-32768` | Groq | Mixtral MoE |
+| `gemma2-9b-it` | Groq | Google Gemma 2 9B |
+| `phi3:mini` | Ollama (local) | Requires `ollama pull phi3:mini` |
+| `llama3.2:3b` | Ollama (local) | Requires `ollama pull llama3.2:3b` |
+| `mistralai/Mistral-7B-Instruct-v0.2` | HuggingFace | Requires `HF_API_TOKEN` in `.env` |
+
+If the requested model is unavailable, the system automatically falls back to the next configured backend.
 
 **Response:**
 ```json
 {
   "response": "Sanchit Minocha is a PhD researcher at the University of Washington...",
-  "model": "llama-3.1-8b-instant",
+  "model": "llama-3.3-70b-versatile",
   "sources": ["profile.md", "personal_data.json"],
   "conversation_id": "abc-123",
   "timestamp": "2024-01-01T00:00:00Z"
@@ -94,7 +123,7 @@ For full Apache deployment → [docs/deployment.md](docs/deployment.md)
 
 ---
 
-## Personalization
+## Knowledge Base
 
 All knowledge about Sanchit lives in plain editable files:
 
@@ -104,7 +133,9 @@ data/
 └── knowledge_base/
     ├── profile.md            ← career, education, skills
     ├── projects.md           ← project details
-    └── about_ai.md           ← what SanchitAI is
+    ├── about_ai.md           ← what this assistant is
+    ├── github.md             ← auto-fetched GitHub repos
+    └── Sanchit_CV.pdf        ← CV (auto-indexed as PDF)
 ```
 
 After editing any file, rebuild the index:
@@ -143,12 +174,12 @@ sanchitai/
 │
 ├── data/
 │   ├── personal_data.json    ← EDIT THIS to personalize
-│   └── knowledge_base/       Markdown knowledge files
+│   └── knowledge_base/       Markdown + PDF knowledge files
 │
 ├── src/
 │   ├── rag/                  Embeddings + ChromaDB + retriever
 │   ├── llm/                  Groq / Ollama / HuggingFace backends
-│   └── data/                 Document loading and chunking
+│   └── data/                 Document loading and chunking (MD + PDF)
 │
 ├── scripts/
 │   ├── build_index.py        Build RAG vector index

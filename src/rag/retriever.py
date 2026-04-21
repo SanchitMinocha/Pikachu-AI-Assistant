@@ -47,12 +47,16 @@ def format_context(retrieved_docs: List[Dict]) -> str:
 
     context_parts = []
     seen = set()
+    i = 1
     for doc in retrieved_docs:
         content = doc["content"].strip()
         if content not in seen:
             seen.add(content)
             source = doc["metadata"].get("source", "unknown")
-            context_parts.append(f"[From {source}]\n{content}")
+            section = doc["metadata"].get("section", "")
+            label = f"{source} › {section}" if section else source
+            context_parts.append(f"[{i}. {label}]\n{content}")
+            i += 1
 
     return "\n\n---\n\n".join(context_parts)
 

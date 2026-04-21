@@ -46,6 +46,40 @@ def chunk_text(text: str, chunk_size: int = None, overlap: int = None) -> List[s
     return [c for c in chunks if len(c) > 30]
 
 
+def load_pdf_files() -> List[Document]:
+    docs = []
+    kb_dir = config.KNOWLEDGE_BASE_DIR
+    if not kb_dir.exists():
+        return docs
+
+    for pdf_file in kb_dir.glob("*.pdf"):
+        try:
+            from pypdf import PdfReader
+            reader = PdfReader(str(pdf_file))
+            text = "\n".join(page.extract_text() or "" for page in reader.pages)
+            text = text.strip()
+            if not text:
+                logger.warning(f"No text extracted from {pdf_file.name}")
+                continue
+            chunks = chunk_text(text)
+            for i, chunk in enumerate(chunks):
+                docs.append(Document(
+                    content=chunk,
+                    metadata={
+                        "source": pdf_file.name,
+                        "source_type": "pdf",
+                        "chunk_index": i,
+                        "file_path": str(pdf_file),
+                    }
+                ))
+            logger.info(f"Loaded {len(chunks)} chunks from {pdf_file.name}")
+        except ImportError:
+            logger.error("pypdf not installed — run: pip install pypdf>=4.0.0")
+        except Exception as e:
+            logger.error(f"Failed to load {pdf_file.name}: {e}")
+    return docs
+
+
 def load_markdown_files() -> List[Document]:
     docs = []
     kb_dir = config.KNOWLEDGE_BASE_DIR
@@ -163,7 +197,7 @@ def load_personal_data() -> List[Document]:
     ai_info = data.get("ai_assistant", {})
     if ai_info:
         text = (
-            f"About SanchitAI: {ai_info.get('purpose', '')}\n"
+            f"About {ai_info.get('name', 'Pikachu - Sanchit\'s AI Assistant')}: {ai_info.get('purpose', '')}\n"
             f"Built by: {ai_info.get('created_by', '')}\n"
             f"Built with: {ai_info.get('built_with', '')}\n"
             f"Project type: {ai_info.get('project_type', '')}"
@@ -198,6 +232,7 @@ def load_all_documents() -> List[Document]:
     """Load all documents from all sources."""
     all_docs = []
     all_docs.extend(load_markdown_files())
+    all_docs.extend(load_pdf_files())
     all_docs.extend(load_personal_data())
     logger.info(f"Total documents loaded: {len(all_docs)}")
     return all_docs

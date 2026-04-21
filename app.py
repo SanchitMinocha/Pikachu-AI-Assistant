@@ -111,13 +111,18 @@ def chat():
 
     conversation_id = data.get("conversation_id")
     top_k = min(int(data.get("top_k", config.TOP_K_RESULTS)), 10)
+    max_tokens = int(data.get("max_tokens", config.MAX_NEW_TOKENS))
     model_override = (data.get("model") or "").strip() or None
 
     # Get or create conversation history
     conv_id, history = get_or_create_conversation(conversation_id)
 
-    # RAG: retrieve relevant context
-    retrieved = retrieve(message, top_k=top_k)
+    # RAG: retrieve relevant context — augment query with recent history for follow-up questions
+    retrieval_query = message
+    if history:
+        recent = " ".join(t["content"][:150] for t in history[-4:])
+        retrieval_query = f"{recent} {message}"
+    retrieved = retrieve(retrieval_query, top_k=top_k)
     context = format_context(retrieved)
     sources = list({doc["metadata"].get("source", "") for doc in retrieved})
 
@@ -133,6 +138,7 @@ def chat():
             context=context,
             history=history,
             model=model_override,
+            max_tokens=max_tokens,
         )
     except RuntimeError as e:
         logger.error(f"LLM error: {e}")
