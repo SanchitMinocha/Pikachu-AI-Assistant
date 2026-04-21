@@ -30,9 +30,11 @@ User Question
       │                                                              │
       └─── 3. GENERATE ──────────────────────────────────────────────┘
                 LLM generates a response grounded ONLY in context
-                Primary: Groq API (llama-3.3-70b-versatile)
-                Fallback 1: Local Ollama (llama3.2:3b — offline capable)
-                Fallback 2: HuggingFace API (optional, requires HF_API_TOKEN)
+                1. Groq API (llama-3.3-70b-versatile) — fast, free tier
+                2. Cerebras API (llama3.3-70b) — fast, free
+                3. OpenRouter API (openai/gpt-oss-20b:free) — free models
+                4. HuggingFace API (meta-llama/Llama-3.2-3B-Instruct) — optional
+                5. Local Ollama (llama3.2:3b) — offline capable
 ```
 
 ---
@@ -113,10 +115,19 @@ Takes the retrieved context + conversation history and sends them to an LLM with
 | `llama3-8b-8192` | Groq | Llama 3 8B on Groq |
 | `llama3-70b-8192` | Groq | Llama 3 70B on Groq |
 | `mixtral-8x7b-32768` | Groq | Mixtral MoE |
-| `gemma2-9b-it` | Groq | Google Gemma 2 |
+| `gemma2-9b-it` | Groq | Google Gemma 2 9B |
+| `gemma-7b-it` | Groq | Google Gemma 7B |
 | `phi3:mini` | Ollama | Local — requires `ollama pull phi3:mini` |
 | `llama3.2:3b` | Ollama | Local — requires `ollama pull llama3.2:3b` |
-| `mistralai/Mistral-7B-Instruct-v0.2` | HuggingFace | Requires `HF_API_TOKEN` |
+| `llama3.3-70b` | Cerebras | Free — `CEREBRAS_API_KEY` |
+| `llama3.1-70b` | Cerebras | Free — 70B model |
+| `llama3.1-8b` | Cerebras | Free — faster, smaller |
+| `gpt-oss-120b` | Cerebras | Free — large OSS model |
+| `qwen-3-235b-a22b-instruct-2507` | Cerebras | Free — Qwen 3 235B MoE |
+| `openai/gpt-oss-20b:free` | OpenRouter | Free — default; `OPENROUTER_API_KEY` |
+| `meta-llama/llama-3.2-3b-instruct:free` | OpenRouter | Free — lightweight Llama |
+| `google/gemma-3-1b-it:free` | OpenRouter | Free — lightweight Gemma |
+| `meta-llama/Llama-3.2-3B-Instruct` | HuggingFace | Requires fine-grained token with inference permission |
 
 If the requested model is unavailable, the system automatically falls back to the next configured backend.
 

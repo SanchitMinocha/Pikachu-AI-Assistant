@@ -17,6 +17,7 @@
     "preferred_name": "Sanchit",
     "date_of_birth": "1997-11-05",
     "pronouns": "he/him",
+    "height": "5'8",
     "location": "Seattle, WA, USA",
     "hometown": "New Delhi, India",
     "nationality": "Indian",
@@ -105,12 +106,12 @@
   ],
 
   "skills": {
-    "programming": ["Python", "JavaScript", "SQL", "Bash"],
-    "machine_learning": ["PyTorch", "TensorFlow", "scikit-learn", "LLMs", "RAG", "LoRA fine-tuning", "Computer Vision"],
-    "geospatial": ["Remote Sensing", "Satellite Imagery Analysis", "Google Earth Engine", "Hydrological Modeling", "GIS"],
+    "programming": ["Python", "JavaScript", "SQL", "Bash", "C#"],
+    "machine_learning": ["PyTorch", "TensorFlow", "scikit-learn", "LLMs", "RAG", "LoRA fine-tuning", "Computer Vision", "Deep Learning", "Clustering", "Classification", "Regression", "XGBoost", "LightGBM", "CatBoost"],
+    "geospatial": ["Remote Sensing", "Satellite Imagery Analysis", "Google Earth Engine", "Hydrological Modeling", "GIS", "Time Series Analysis"],
     "cloud_devops": ["Azure ML", "Google Cloud", "Docker", "CI/CD", "Apache Server"],
     "data_tools": ["Pandas", "NumPy", "xarray", "SQL", "NoSQL", "ChromaDB"],
-    "visualization": ["Dash", "D3.js", "Plotly", "Streamlit", "Tableau", "PowerBI"],
+    "visualization": ["Dash", "D3.js", "Plotly", "Streamlit", "Tableau", "PowerBI", "Matplotlib", "Seaborn"],
     "web": ["Django", "Flask", "HTML", "CSS"]
   },
 
@@ -220,8 +221,9 @@
     "Sanchit's favorite book is 'Thinking, Fast and Slow' by Daniel Kahneman",
     "Sanchit is a big fan of 'FRIENDS' (US)",
     "Sanchit is a big fan of 'The Big Bang Theory' (US)",
-    "Sanchit has been to Thailand, England, Scotland, India and USA."
-
+    "Sanchit has been to Thailand, England, Scotland, India and USA.",
+    "Sanchit is very fond of Pokemon particularly Pikachu and therefore gave that name to his AI assistant.",
+    "Sanchit also plays video games like League of Legends or Mobile Legends."
   ],
 
   "visa_status": [
@@ -286,6 +288,30 @@
     {
       "question": "What makes Sanchit unique?",
       "answer": "Sanchit uniquely combines deep geospatial and remote sensing expertise with modern AI/ML skills. He doesn't just build models — he builds tools that governments and agencies actually use. His work sits at the intersection of satellite technology, machine learning, and environmental sustainability, which is a rare combination."
+    },
+    {
+      "question": "What is Sanchit's favorite video game?",
+      "answer": "Sanchit's favorite video game is Mobile Legends."
+    },
+    {
+      "question": "What is Sanchit's PhD Advisor Name?",
+      "answer": "Sanchit's PhD Advisor Name is Dr. Faisal Hossain."
+    },
+    {
+      "question": "Whic research lab is Sanchit doing his PhD from?",
+      "answer": "Sanchit is doing his PhD from the SASWE Research Lab (www.saswe.net) at the University of Washington."
+    },
+    {
+      "question": "What is Sanchit's favorite Pokemon?",
+      "answer": "Sanchit's favorite Pokemon is Pikachu."
+    },
+    {
+      "question": "Who does Sanchit loves the most?",
+      "answer": "Sanchit loves his family the most and particularly his mom."
+    },
+    {
+      "question": "How many siblings does Sanchit have?",
+      "answer": "Sanchit has 1 elder brother working as a Software Developer at Aristocrat Technologies."
     }
   ]
 }

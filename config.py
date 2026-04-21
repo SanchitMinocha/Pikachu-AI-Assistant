@@ -17,7 +17,7 @@ os.environ.setdefault("FASTEMBED_CACHE_PATH", _models_dir)
 # Load .env file if present (works for direct `python app.py` and mod_wsgi)
 _env_file = BASE_DIR / ".env"
 if _env_file.exists():
-    with open(_env_file) as _f:
+    with open(_env_file, encoding="utf-8") as _f:
         for _line in _f:
             _line = _line.strip()
             if _line and not _line.startswith("#") and "=" in _line:
@@ -39,9 +39,17 @@ LLM_BACKEND = os.getenv("LLM_BACKEND", "ollama")
 OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
 OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "llama3.2:3b")  # lightweight default
 
-# HuggingFace Inference API (free fallback)
+# Cerebras Inference API (fast free fallback — cloud.cerebras.ai)
+CEREBRAS_API_KEY = os.getenv("CEREBRAS_API_KEY", "")
+CEREBRAS_MODEL = os.getenv("CEREBRAS_MODEL", "llama3.1-8b")
+
+# OpenRouter API (aggregates many free models — openrouter.ai)
+OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY", "")
+OPENROUTER_MODEL = os.getenv("OPENROUTER_MODEL", "openai/gpt-oss-20b:free")
+
+# HuggingFace Inference API (optional fallback — requires fine-grained token)
 HF_API_TOKEN = os.getenv("HF_API_TOKEN", "")
-HF_MODEL_ID = os.getenv("HF_MODEL_ID", "mistralai/Mistral-7B-Instruct-v0.2")
+HF_MODEL_ID = os.getenv("HF_MODEL_ID", "meta-llama/Llama-3.2-3B-Instruct")
 
 # Groq API (fast free tier)
 GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")

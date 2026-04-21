@@ -117,10 +117,10 @@ def retrieve(query: str, top_k: int = None) -> List[Dict]:
         for i, doc in enumerate(results):
             source = doc["metadata"].get("source", "unknown")
             section = doc["metadata"].get("section", "")
-            label = f"{source} › {section}" if section else source
+            label = f"{source} > {section}" if section else source
+            preview = doc['content'][:120].replace('\n', ' ').encode('ascii', 'replace').decode('ascii')
             logger.info(
-                f"  [{i+1}] score={doc['similarity']:.4f} | {label} | "
-                f"{doc['content'][:120].replace(chr(10), ' ')!r}"
+                f"  [{i+1}] score={doc['similarity']:.4f} | {label} | {preview!r}"
             )
     else:
         logger.info(
@@ -151,7 +151,7 @@ def format_context(retrieved_docs: List[Dict]) -> str:
             source = doc["metadata"].get("source", "unknown")
             section = doc["metadata"].get("section", "")
             score = doc.get("similarity", 0)
-            label = f"{source} › {section}" if section else source
+            label = f"{source} > {section}" if section else source
             context_parts.append(f"[{i}. {label} (score: {score:.2f})]\n{content}")
             i += 1
 
@@ -162,4 +162,4 @@ def reload_vectorstore():
     """Force reload the vectorstore (useful after rebuilding index)."""
     global _vectorstore
     _vectorstore = None
-    logger.info("Vector store cache cleared — will reload on next query.")
+    logger.info("Vector store cache cleared - will reload on next query.")

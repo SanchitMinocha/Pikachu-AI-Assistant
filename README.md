@@ -34,10 +34,12 @@ Pikachu uses **Retrieval-Augmented Generation (RAG)**. When you ask a question:
 5. Surviving chunks are injected as numbered, labelled context into the LLM prompt
 6. The LLM generates a response grounded strictly in that context; the fallback "I don't know" phrase only fires when the context block is truly empty
 
-**LLM backends** (with automatic fallback):
-- **Primary:** Groq API — `llama-3.3-70b-versatile` (fast, accurate, free tier)
-- **Fallback 1:** Local Ollama — `llama3.2:3b` (no internet needed)
-- **Fallback 2:** HuggingFace Inference API (set `HF_API_TOKEN` in `.env`)
+**LLM backends** (with automatic fallback in order):
+1. **Groq** — `llama-3.3-70b-versatile` (fast, free tier)
+2. **Cerebras** — `llama3.3-70b` (fast, free — `CEREBRAS_API_KEY`)
+3. **OpenRouter** — `openai/gpt-oss-20b:free` (free models — `OPENROUTER_API_KEY`)
+4. **HuggingFace** — `meta-llama/Llama-3.2-3B-Instruct` (requires fine-grained token)
+5. **Ollama** — local, no internet needed
 
 For a deeper technical explanation → [docs/architecture.md](docs/architecture.md)
 
@@ -80,9 +82,18 @@ curl -X POST http://localhost:5050/api/chat \
 | `llama3-70b-8192` | Groq | Groq-hosted Llama 3 70B |
 | `mixtral-8x7b-32768` | Groq | Mixtral MoE |
 | `gemma2-9b-it` | Groq | Google Gemma 2 9B |
+| `gemma-7b-it` | Groq | Google Gemma 7B |
+| `llama3.3-70b` | Cerebras | Free — set `CEREBRAS_API_KEY` in `.env` |
+| `llama3.1-70b` | Cerebras | Free — fast 70B model |
+| `llama3.1-8b` | Cerebras | Free — fast, smaller model |
+| `gpt-oss-120b` | Cerebras | Free — large OSS model |
+| `qwen-3-235b-a22b-instruct-2507` | Cerebras | Free — Qwen 3 235B MoE |
+| `openai/gpt-oss-20b:free` | OpenRouter | Free — default; set `OPENROUTER_API_KEY` in `.env` |
+| `meta-llama/llama-3.2-3b-instruct:free` | OpenRouter | Free — lightweight Llama |
+| `google/gemma-3-1b-it:free` | OpenRouter | Free — lightweight Gemma |
 | `phi3:mini` | Ollama (local) | Requires `ollama pull phi3:mini` |
 | `llama3.2:3b` | Ollama (local) | Requires `ollama pull llama3.2:3b` |
-| `mistralai/Mistral-7B-Instruct-v0.2` | HuggingFace | Requires `HF_API_TOKEN` in `.env` |
+| `meta-llama/Llama-3.2-3B-Instruct` | HuggingFace | Requires fine-grained token with inference permission |
 
 **Response:**
 ```json

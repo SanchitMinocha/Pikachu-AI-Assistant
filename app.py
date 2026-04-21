@@ -30,14 +30,12 @@ from src.llm.assistant import generate, check_ollama_available, list_ollama_mode
 
 # ----- Logging -----
 config.LOGS_DIR.mkdir(exist_ok=True)
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
-    handlers=[
-        logging.StreamHandler(),
-        logging.FileHandler(config.LOGS_DIR / "app.log"),
-    ],
-)
+_fmt = logging.Formatter("%(asctime)s [%(levelname)s] %(name)s: %(message)s")
+_file_handler = logging.FileHandler(config.LOGS_DIR / "app.log", encoding="utf-8")
+_file_handler.setFormatter(_fmt)
+# Under Apache/mod_wsgi stderr has no real file descriptor and is ASCII-only.
+# Log only to file to avoid UnicodeEncodeError on non-ASCII content from the knowledge base.
+logging.basicConfig(level=logging.INFO, handlers=[_file_handler])
 logger = logging.getLogger(__name__)
 
 # ----- Flask App -----

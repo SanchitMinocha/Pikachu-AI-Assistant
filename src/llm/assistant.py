@@ -112,41 +112,30 @@ def call_huggingface(
     context: str,
     history: List[Dict],
 ) -> Tuple[str, str]:
-    """Call HuggingFace Inference API. Returns (response_text, model_name)."""
+    """Call HuggingFace Inference Providers API (OpenAI-compatible). Returns (response_text, model_name)."""
     if not config.HF_API_TOKEN:
         raise RuntimeError("HF_API_TOKEN not set in environment.")
 
-    # Build a simple prompt string for HF API
-    history_text = ""
-    for turn in history[-(config.MAX_HISTORY_TURNS * 2):]:
-        role = "User" if turn["role"] == "user" else "Assistant"
-        history_text += f"{role}: {turn['content']}\n"
-
-    context_block = f"\n\nCONTEXT:\n{context}\n\n" if context else ""
-    prompt = (
-        f"<s>[INST] <<SYS>>\n{SYSTEM_PROMPT}\n<</SYS>>\n\n"
-        f"{context_block}{history_text}User: {user_message} [/INST]"
-    )
-
-    headers = {"Authorization": f"Bearer {config.HF_API_TOKEN}"}
-    payload = {
-        "inputs": prompt,
-        "parameters": {
-            "max_new_tokens": config.MAX_NEW_TOKENS,
-            "temperature": config.TEMPERATURE,
-            "return_full_text": False,
-        },
+    messages = build_prompt_ollama(user_message, context, history)  # same format
+    headers = {
+        "Authorization": f"Bearer {config.HF_API_TOKEN}",
+        "Content-Type": "application/json",
     }
-    url = f"https://api-inference.huggingface.co/models/{config.HF_MODEL_ID}"
-    resp = requests.post(url, headers=headers, json=payload, timeout=60)
+    payload = {
+        "model": config.HF_MODEL_ID,
+        "messages": messages,
+        "max_tokens": config.MAX_NEW_TOKENS,
+        "temperature": config.TEMPERATURE,
+    }
+    resp = requests.post(
+        "https://router.huggingface.co/v1/chat/completions",
+        headers=headers,
+        json=payload,
+        timeout=60,
+    )
     resp.raise_for_status()
     data = resp.json()
-
-    if isinstance(data, list) and data:
-        text = data[0].get("generated_text", "").strip()
-    else:
-        raise RuntimeError(f"Unexpected HF response: {data}")
-
+    text = data["choices"][0]["message"]["content"].strip()
     return text, config.HF_MODEL_ID
 
 
@@ -186,6 +175,74 @@ def call_groq(
     return text, config.GROQ_MODEL
 
 
+# ----- Cerebras Backend -----
+
+def call_cerebras(
+    user_message: str,
+    context: str,
+    history: List[Dict],
+) -> Tuple[str, str]:
+    """Call Cerebras Inference API (OpenAI-compatible). Returns (response_text, model_name)."""
+    if not config.CEREBRAS_API_KEY:
+        raise RuntimeError("CEREBRAS_API_KEY not set in environment.")
+
+    messages = build_prompt_ollama(user_message, context, history)
+    headers = {
+        "Authorization": f"Bearer {config.CEREBRAS_API_KEY}",
+        "Content-Type": "application/json",
+    }
+    payload = {
+        "model": config.CEREBRAS_MODEL,
+        "messages": messages,
+        "max_tokens": config.MAX_NEW_TOKENS,
+        "temperature": config.TEMPERATURE,
+    }
+    resp = requests.post(
+        "https://api.cerebras.ai/v1/chat/completions",
+        headers=headers,
+        json=payload,
+        timeout=60,
+    )
+    resp.raise_for_status()
+    data = resp.json()
+    text = data["choices"][0]["message"]["content"].strip()
+    return text, config.CEREBRAS_MODEL
+
+
+# ----- OpenRouter Backend -----
+
+def call_openrouter(
+    user_message: str,
+    context: str,
+    history: List[Dict],
+) -> Tuple[str, str]:
+    """Call OpenRouter API (OpenAI-compatible). Returns (response_text, model_name)."""
+    if not config.OPENROUTER_API_KEY:
+        raise RuntimeError("OPENROUTER_API_KEY not set in environment.")
+
+    messages = build_prompt_ollama(user_message, context, history)
+    headers = {
+        "Authorization": f"Bearer {config.OPENROUTER_API_KEY}",
+        "Content-Type": "application/json",
+    }
+    payload = {
+        "model": config.OPENROUTER_MODEL,
+        "messages": messages,
+        "max_tokens": config.MAX_NEW_TOKENS,
+        "temperature": config.TEMPERATURE,
+    }
+    resp = requests.post(
+        "https://openrouter.ai/api/v1/chat/completions",
+        headers=headers,
+        json=payload,
+        timeout=60,
+    )
+    resp.raise_for_status()
+    data = resp.json()
+    text = data["choices"][0]["message"]["content"].strip()
+    return text, config.OPENROUTER_MODEL
+
+
 # ----- Model name → backend detection -----
 
 # Known Groq model IDs
@@ -195,14 +252,25 @@ GROQ_MODELS = {
     "mixtral-8x7b-32768", "gemma2-9b-it", "gemma-7b-it",
 }
 
+# Known Cerebras model IDs
+CEREBRAS_MODELS = {
+    "llama3.1-8b", "llama3.1-70b", "llama3.3-70b",
+    "gpt-oss-120b", "qwen-3-235b-a22b-instruct-2507",
+}
+
 
 def detect_backend(model: str) -> str:
     """Guess the backend from a model name string."""
     m = model.strip().lower()
     if m in GROQ_MODELS:
         return "groq"
+    if m in CEREBRAS_MODELS:
+        return "cerebras"
+    # OpenRouter models use org/name:variant — the colon variant distinguishes them from HF
+    if "/" in m and ":" in m.split("/")[-1]:
+        return "openrouter"    # e.g. meta-llama/llama-3.2-3b-instruct:free
     if "/" in m:
-        return "huggingface"   # e.g. mistralai/Mistral-7B-Instruct-v0.2
+        return "huggingface"   # e.g. meta-llama/Llama-3.2-3B-Instruct
     return "ollama"            # e.g. phi3:mini, llama3.2:3b
 
 
@@ -231,6 +299,8 @@ def generate(
     # --- Override model temporarily if caller specified one ---
     original_ollama = config.OLLAMA_MODEL
     original_groq = config.GROQ_MODEL
+    original_cerebras = config.CEREBRAS_MODEL
+    original_openrouter = config.OPENROUTER_MODEL
     original_hf = config.HF_MODEL_ID
     override_backend = None
 
@@ -240,50 +310,70 @@ def generate(
             config.OLLAMA_MODEL = model
         elif override_backend == "groq":
             config.GROQ_MODEL = model
+        elif override_backend == "cerebras":
+            config.CEREBRAS_MODEL = model
+        elif override_backend == "openrouter":
+            config.OPENROUTER_MODEL = model
         elif override_backend == "huggingface":
             config.HF_MODEL_ID = model
-        logger.info(f"Model override: '{model}' → backend '{override_backend}'")
+        logger.info(f"Model override: '{model}' -> backend '{override_backend}'")
 
-    # --- Build backend chain ---
+    # --- Build backend chain: groq → cerebras → openrouter → ollama → huggingface ---
     primary = override_backend or config.LLM_BACKEND
     backends_to_try = [primary]
 
-    # Always append fallbacks after the primary
-    if primary != "groq" and config.GROQ_API_KEY:
-        backends_to_try.append("groq")
-    if primary != "ollama" and check_ollama_available():
+    for b, key in [
+        ("groq", config.GROQ_API_KEY),
+        ("cerebras", config.CEREBRAS_API_KEY),
+        ("openrouter", config.OPENROUTER_API_KEY),
+        ("huggingface", config.HF_API_TOKEN),
+    ]:
+        if b != primary and key:
+            backends_to_try.append(b)
+    if "ollama" != primary and check_ollama_available():
         backends_to_try.append("ollama")
-    if primary != "huggingface" and config.HF_API_TOKEN:
-        backends_to_try.append("huggingface")
+
+    def _model_label(b):
+        return {
+            "ollama": config.OLLAMA_MODEL, "groq": config.GROQ_MODEL,
+            "cerebras": config.CEREBRAS_MODEL, "openrouter": config.OPENROUTER_MODEL,
+            "huggingface": config.HF_MODEL_ID,
+        }.get(b, b)
 
     try:
         for b in backends_to_try:
-            # After first attempt, restore original model names for fallback
             if b != primary:
                 config.OLLAMA_MODEL = original_ollama
                 config.GROQ_MODEL = original_groq
+                config.CEREBRAS_MODEL = original_cerebras
+                config.OPENROUTER_MODEL = original_openrouter
                 config.HF_MODEL_ID = original_hf
             try:
                 if b == "ollama":
                     return call_ollama(user_message, context, history)
-                elif b == "huggingface":
-                    return call_huggingface(user_message, context, history)
                 elif b == "groq":
                     return call_groq(user_message, context, history)
+                elif b == "cerebras":
+                    return call_cerebras(user_message, context, history)
+                elif b == "openrouter":
+                    return call_openrouter(user_message, context, history)
+                elif b == "huggingface":
+                    return call_huggingface(user_message, context, history)
             except Exception as e:
-                errors.append(f"{b}({config.OLLAMA_MODEL if b == 'ollama' else config.GROQ_MODEL if b == 'groq' else config.HF_MODEL_ID}): {e}")
+                errors.append(f"{b}({_model_label(b)}): {e}")
                 logger.warning(f"Backend '{b}' failed: {e}")
                 continue
     finally:
-        # Always restore original config
         config.OLLAMA_MODEL = original_ollama
         config.GROQ_MODEL = original_groq
+        config.CEREBRAS_MODEL = original_cerebras
+        config.OPENROUTER_MODEL = original_openrouter
         config.HF_MODEL_ID = original_hf
         config.MAX_NEW_TOKENS = original_max_tokens
 
     raise RuntimeError(
         f"All LLM backends failed. Errors: {'; '.join(errors)}\n"
-        "Make sure Ollama is running (`ollama serve`) or set HF_API_TOKEN / GROQ_API_KEY."
+        "Set GROQ_API_KEY, CEREBRAS_API_KEY, or OPENROUTER_API_KEY in .env"
     )
 
 
