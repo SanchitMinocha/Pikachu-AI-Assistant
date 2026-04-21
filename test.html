@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pikachu API Tester</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0f1117;
+      --surface: #1a1d27;
+      --surface2: #22263a;
+      --border: #2d3150;
+      --accent: #6c63ff;
+      --accent2: #4ade80;
+      --text: #e2e8f0;
+      --text-muted: #8892a4;
+      --user-bubble: #2d3363;
+      --bot-bubble: #1e2235;
+      --danger: #ef4444;
+      --warn: #f59e0b;
+      --radius: 12px;
+      --mono: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* ── Top bar ─────────────────────────────────────── */
+    header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 10px 20px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-shrink: 0;
+      flex-wrap: wrap;
+    }
+    .logo { font-size: 18px; font-weight: 700; color: var(--accent); white-space: nowrap; }
+    .logo span { color: var(--text-muted); font-weight: 400; font-size: 13px; margin-left: 6px; }
+
+    .header-controls {
+      display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-left: auto;
+    }
+
+    select, input[type="text"], input[type="number"] {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: 8px;
+      padding: 6px 10px;
+      font-size: 13px;
+      outline: none;
+    }
+    select:focus, input:focus { border-color: var(--accent); }
+
+    .health-dot {
+      width: 9px; height: 9px; border-radius: 50%;
+      background: #555; display: inline-block;
+      transition: background 0.3s;
+    }
+    .health-dot.ok  { background: var(--accent2); box-shadow: 0 0 6px var(--accent2); }
+    .health-dot.bad { background: var(--danger); }
+    .health-label { font-size: 12px; color: var(--text-muted); }
+
+    label { font-size: 12px; color: var(--text-muted); white-space: nowrap; }
+
+    /* ── Settings panel ──────────────────────────────── */
+    .settings-row {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 8px 20px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      flex-wrap: wrap;
+      flex-shrink: 0;
+    }
+    .settings-row label { display: flex; align-items: center; gap: 6px; }
+    .settings-row input[type="text"] { width: 260px; }
+    .settings-row input[type="number"] { width: 70px; }
+
+    button {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 7px 14px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.15s;
+    }
+    button:hover { opacity: 0.85; }
+    button.secondary {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+    }
+    button.danger { background: var(--danger); }
+
+    /* ── Chat area ───────────────────────────────────── */
+    #chat {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      scroll-behavior: smooth;
+    }
+
+    .msg {
+      display: flex;
+      flex-direction: column;
+      max-width: 72%;
+    }
+    .msg.user { align-self: flex-end; align-items: flex-end; }
+    .msg.bot  { align-self: flex-start; align-items: flex-start; }
+
+    .bubble {
+      padding: 12px 16px;
+      border-radius: var(--radius);
+      font-size: 14px;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    .msg.user .bubble {
+      background: var(--user-bubble);
+      border-bottom-right-radius: 3px;
+      color: var(--text);
+    }
+    .msg.bot .bubble {
+      background: var(--bot-bubble);
+      border-bottom-left-radius: 3px;
+      border: 1px solid var(--border);
+    }
+    .msg.bot .bubble.thinking {
+      color: var(--text-muted);
+      font-style: italic;
+    }
+
+    .meta {
+      display: flex; gap: 10px; align-items: center; flex-wrap: wrap;
+      margin-top: 5px;
+    }
+    .meta-tag {
+      font-size: 11px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 2px 8px;
+      color: var(--text-muted);
+      font-family: var(--mono);
+    }
+    .meta-tag.source { color: #7dd3fc; border-color: #1e4060; }
+    .meta-tag.model  { color: #c4b5fd; border-color: #3b2e6e; }
+    .meta-tag.score  { color: var(--accent2); border-color: #14532d; }
+
+    /* ── Input row ───────────────────────────────────── */
+    .input-row {
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      padding: 14px 20px;
+      display: flex;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+    #msg-input {
+      flex: 1;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: var(--radius);
+      padding: 12px 16px;
+      font-size: 14px;
+      outline: none;
+      resize: none;
+      min-height: 46px;
+      max-height: 140px;
+      line-height: 1.5;
+      font-family: inherit;
+    }
+    #msg-input:focus { border-color: var(--accent); }
+    #msg-input::placeholder { color: var(--text-muted); }
+
+    #send-btn {
+      align-self: flex-end;
+      padding: 11px 18px;
+      font-size: 15px;
+    }
+    #send-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+    .clear-btn { align-self: flex-end; }
+
+    /* ── System messages ─────────────────────────────── */
+    .sys-msg {
+      align-self: center;
+      font-size: 12px;
+      color: var(--text-muted);
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 4px 14px;
+    }
+
+    /* ── Health panel ────────────────────────────────── */
+    #health-panel {
+      display: none;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px 18px;
+      font-size: 13px;
+      font-family: var(--mono);
+      white-space: pre;
+      line-height: 1.7;
+      margin: 10px 20px 0;
+      color: var(--text-muted);
+      flex-shrink: 0;
+    }
+
+    /* ── Spinner ─────────────────────────────────────── */
+    .spinner {
+      display: inline-block;
+      width: 14px; height: 14px;
+      border: 2px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      vertical-align: middle;
+      margin-right: 6px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Scrollbar ───────────────────────────────────── */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  </style>
+</head>
+<body>
+
+<!-- Top bar -->
+<header>
+  <div class="logo">⚡ Pikachu <span>API Tester</span></div>
+  <div class="header-controls">
+    <span class="health-dot" id="health-dot"></span>
+    <span class="health-label" id="health-label">checking...</span>
+    <button class="secondary" onclick="toggleHealth()">Health</button>
+    <button class="secondary danger" onclick="rebuildIndex()">Rebuild Index</button>
+  </div>
+</header>
+
+<!-- Settings -->
+<div class="settings-row">
+  <label>
+    Base URL
+    <input type="text" id="base-url" value="https://f-hossain-3.ce.washington.edu/scb" placeholder="https://f-hossain-3.ce.washington.edu/scb">
+  </label>
+  <label>
+    Model
+    <select id="model-select">
+      <option value="">— default (from .env) —</option>
+      <option value="llama-3.3-70b-versatile" selected>llama-3.3-70b-versatile (Groq)</option>
+      <option value="llama-3.1-70b-versatile">llama-3.1-70b-versatile (Groq)</option>
+      <option value="llama-3.1-8b-instant">llama-3.1-8b-instant (Groq)</option>
+      <option value="llama3-8b-8192">llama3-8b-8192 (Groq)</option>
+      <option value="mixtral-8x7b-32768">mixtral-8x7b-32768 (Groq)</option>
+      <option value="gemma2-9b-it">gemma2-9b-it (Groq)</option>
+      <option value="phi3:mini">phi3:mini (Ollama)</option>
+      <option value="llama3.2:3b">llama3.2:3b (Ollama)</option>
+    </select>
+  </label>
+  <label>
+    Top-K
+    <input type="number" id="top-k" value="7" min="1" max="10">
+  </label>
+  <label>
+    Max tokens
+    <input type="number" id="max-tokens" value="500" min="100" max="2000">
+  </label>
+  <button class="secondary" onclick="newConversation()" title="Start a fresh conversation">New conversation</button>
+</div>
+
+<!-- Health panel -->
+<pre id="health-panel"></pre>
+
+<!-- Chat -->
+<div id="chat">
+  <div class="sys-msg">Ask anything about Sanchit Minocha</div>
+</div>
+
+<!-- Input -->
+<div class="input-row">
+  <textarea id="msg-input" placeholder="Ask something… (Enter to send, Shift+Enter for newline)" rows="1"></textarea>
+  <button id="send-btn" onclick="sendMessage()">Send ↑</button>
+</div>
+
+<script>
+  let conversationId = null;
+  let isLoading = false;
+
+  // ── Auto-resize textarea ──────────────────────────────────────────
+  const input = document.getElementById('msg-input');
+  input.addEventListener('input', () => {
+    input.style.height = 'auto';
+    input.style.height = Math.min(input.scrollHeight, 140) + 'px';
+  });
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+  });
+
+  // ── Helpers ───────────────────────────────────────────────────────
+  function baseUrl() {
+    return document.getElementById('base-url').value.replace(/\/$/, '');
+  }
+
+  function scrollDown() {
+    const chat = document.getElementById('chat');
+    chat.scrollTop = chat.scrollHeight;
+  }
+
+  function addSysMsg(text) {
+    const el = document.createElement('div');
+    el.className = 'sys-msg';
+    el.textContent = text;
+    document.getElementById('chat').appendChild(el);
+    scrollDown();
+  }
+
+  function addMessage(role, text, metadata) {
+    const chat = document.getElementById('chat');
+    const msg = document.createElement('div');
+    msg.className = `msg ${role}`;
+
+    const bubble = document.createElement('div');
+    bubble.className = 'bubble';
+    bubble.textContent = text;
+    msg.appendChild(bubble);
+
+    if (metadata) {
+      const meta = document.createElement('div');
+      meta.className = 'meta';
+      if (metadata.model) {
+        const t = document.createElement('span');
+        t.className = 'meta-tag model';
+        t.textContent = metadata.model;
+        meta.appendChild(t);
+      }
+      (metadata.sources || []).forEach(s => {
+        const t = document.createElement('span');
+        t.className = 'meta-tag source';
+        t.textContent = s;
+        meta.appendChild(t);
+      });
+      if (metadata.conv_id) {
+        const t = document.createElement('span');
+        t.className = 'meta-tag';
+        t.textContent = 'conv: ' + metadata.conv_id.slice(0, 8) + '…';
+        meta.appendChild(t);
+      }
+      msg.appendChild(meta);
+    }
+
+    chat.appendChild(msg);
+    scrollDown();
+    return bubble;
+  }
+
+  function addThinking() {
+    const chat = document.getElementById('chat');
+    const msg = document.createElement('div');
+    msg.className = 'msg bot';
+    msg.id = 'thinking-msg';
+    const bubble = document.createElement('div');
+    bubble.className = 'bubble thinking';
+    bubble.innerHTML = '<span class="spinner"></span>Thinking…';
+    msg.appendChild(bubble);
+    chat.appendChild(msg);
+    scrollDown();
+  }
+
+  function removeThinking() {
+    const el = document.getElementById('thinking-msg');
+    if (el) el.remove();
+  }
+
+  // ── Send message ──────────────────────────────────────────────────
+  async function sendMessage() {
+    if (isLoading) return;
+    const text = input.value.trim();
+    if (!text) return;
+
+    input.value = '';
+    input.style.height = 'auto';
+
+    addMessage('user', text);
+
+    const model = document.getElementById('model-select').value;
+    const topK = parseInt(document.getElementById('top-k').value) || 7;
+    const maxTokens = parseInt(document.getElementById('max-tokens').value) || 500;
+
+    const body = { message: text, top_k: topK, max_tokens: maxTokens };
+    if (model) body.model = model;
+    if (conversationId) body.conversation_id = conversationId;
+
+    isLoading = true;
+    document.getElementById('send-btn').disabled = true;
+    addThinking();
+
+    try {
+      const res = await fetch(`${baseUrl()}/api/chat`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+
+      removeThinking();
+
+      if (!res.ok) {
+        const err = await res.text();
+        addMessage('bot', `Error ${res.status}: ${err}`);
+        return;
+      }
+
+      const data = await res.json();
+      conversationId = data.conversation_id;
+
+      addMessage('bot', data.response, {
+        model: data.model,
+        sources: data.sources,
+        conv_id: data.conversation_id,
+      });
+
+    } catch (err) {
+      removeThinking();
+      addMessage('bot', `Network error: ${err.message}\n\nCheck that the server is up at ${baseUrl()}/api/health`);
+    } finally {
+      isLoading = false;
+      document.getElementById('send-btn').disabled = false;
+      input.focus();
+    }
+  }
+
+  // ── New conversation ──────────────────────────────────────────────
+  function newConversation() {
+    conversationId = null;
+    document.getElementById('chat').innerHTML = '';
+    addSysMsg('New conversation started');
+  }
+
+  // ── Health ────────────────────────────────────────────────────────
+  let healthVisible = false;
+
+  async function checkHealth(silent) {
+    const dot = document.getElementById('health-dot');
+    const label = document.getElementById('health-label');
+    try {
+      const res = await fetch(`${baseUrl()}/api/health`);
+      const data = await res.json();
+      const ok = data.status !== 'degraded';
+      dot.className = 'health-dot ' + (ok ? 'ok' : 'bad');
+      label.textContent = ok
+        ? `${data.vector_store_size} chunks indexed`
+        : `degraded — ${data.vector_store_size} chunks`;
+
+      if (!silent && healthVisible) {
+        document.getElementById('health-panel').textContent = JSON.stringify(data, null, 2);
+      }
+    } catch {
+      dot.className = 'health-dot bad';
+      label.textContent = 'unreachable';
+      if (!silent && healthVisible) {
+        document.getElementById('health-panel').textContent = `Could not reach ${baseUrl()}/api/health`;
+      }
+    }
+  }
+
+  async function toggleHealth() {
+    const panel = document.getElementById('health-panel');
+    healthVisible = !healthVisible;
+    if (healthVisible) {
+      panel.style.display = 'block';
+      await checkHealth(false);
+    } else {
+      panel.style.display = 'none';
+    }
+  }
+
+  // ── Rebuild index ─────────────────────────────────────────────────
+  async function rebuildIndex() {
+    if (!confirm('Rebuild the RAG index? This takes ~1 minute.')) return;
+    addSysMsg('Rebuilding index…');
+    try {
+      const res = await fetch(`${baseUrl()}/api/rebuild-index`, { method: 'POST' });
+      const data = await res.json();
+      addSysMsg(data.status === 'success'
+        ? `Index rebuilt: ${data.documents_indexed} documents`
+        : `Rebuild failed: ${JSON.stringify(data)}`);
+      checkHealth(true);
+    } catch (err) {
+      addSysMsg(`Rebuild error: ${err.message}`);
+    }
+  }
+
+  // ── Init ──────────────────────────────────────────────────────────
+  checkHealth(true);
+  setInterval(() => checkHealth(true), 30000);
+  input.focus();
+
+  // re-check health when base URL changes
+  document.getElementById('base-url').addEventListener('change', () => checkHealth(true));
+</script>
+</body>
+</html>

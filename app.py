@@ -17,7 +17,7 @@ from datetime import datetime
 from pathlib import Path
 from functools import wraps
 
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 
 # Bootstrap path
@@ -25,7 +25,7 @@ import sys
 sys.path.insert(0, str(Path(__file__).parent))
 
 import config
-from src.rag.retriever import retrieve, format_context, reload_vectorstore
+from src.rag.retriever import retrieve, format_context, reload_vectorstore, build_retrieval_query
 from src.llm.assistant import generate, check_ollama_available, list_ollama_models
 
 # ----- Logging -----
@@ -75,6 +75,11 @@ def require_api_key(f):
 
 # ----- Routes -----
 
+@app.route("/test")
+def test_page():
+    return send_from_directory(str(Path(__file__).parent), "test.html")
+
+
 @app.route("/api/chat", methods=["POST"])
 def chat():
     """
@@ -117,11 +122,8 @@ def chat():
     # Get or create conversation history
     conv_id, history = get_or_create_conversation(conversation_id)
 
-    # RAG: retrieve relevant context — augment query with recent history for follow-up questions
-    retrieval_query = message
-    if history:
-        recent = " ".join(t["content"][:150] for t in history[-4:])
-        retrieval_query = f"{recent} {message}"
+    # RAG: build topic-focused retrieval query (strips name + question scaffolding)
+    retrieval_query = build_retrieval_query(message, history)
     retrieved = retrieve(retrieval_query, top_k=top_k)
     context = format_context(retrieved)
     sources = list({doc["metadata"].get("source", "") for doc in retrieved})

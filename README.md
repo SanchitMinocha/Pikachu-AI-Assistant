@@ -13,12 +13,12 @@
 
 ## What is Pikachu?
 
-Pikachu is Sanchit's personal AI assistant — it answers questions about Sanchit Minocha: his research, career, projects, opinions, and personality. It is deployed as a REST API and integrated as a chatbot on his [personal website](https://sanchitminocha.github.io/).
+Pikachu is Sanchit's personal AI assistant — it answers questions about Sanchit Minocha: his research, career, projects, publications, opinions, and personality. It is deployed as a REST API and integrated as a chatbot on his [personal website](https://sanchitminocha.github.io/).
 
 Ask it things like:
 - *"What is Sanchit's most impactful project?"*
-- *"What does Sanchit think about LLMs and RAG?"*
-- *"Tell me about RAT 3.0."*
+- *"Tell me about the GRILSS dataset."*
+- *"What publications has Sanchit written in 2025?"*
 - *"What are his hobbies?"*
 
 ---
@@ -27,15 +27,17 @@ Ask it things like:
 
 Pikachu uses **Retrieval-Augmented Generation (RAG)**. When you ask a question:
 
-1. Your question is converted to a semantic vector (fastembed, ONNX)
-2. ChromaDB finds the most relevant chunks from the knowledge base
-3. Those chunks are injected as numbered, labelled context into an LLM prompt
-4. The LLM generates a grounded, strictly context-bound response
+1. The query is cleaned — person's name and question scaffolding are stripped so the embedding focuses on the actual topic
+2. Follow-up detection: if the query contains a dangling pronoun ("it", "that", "those") or is a continuation phrase ("yes", "tell me more", "other than that?"), the last user message *and* a snippet of the last assistant response are prepended — this grounds the embedding in prior context while steering retrieval toward *new* content not yet covered
+3. The augmented query is embedded with **BAAI/bge-base-en-v1.5** (ONNX, 768-dim) and ChromaDB finds the most relevant chunks via cosine similarity
+4. Chunks scoring below the similarity threshold are discarded — the LLM receives an explicit "no information found" marker rather than empty context
+5. Surviving chunks are injected as numbered, labelled context into the LLM prompt
+6. The LLM generates a response grounded strictly in that context; the fallback "I don't know" phrase only fires when the context block is truly empty
 
 **LLM backends** (with automatic fallback):
-- **Primary:** Groq API — Llama 3.3 70B Versatile (fast, accurate, free tier)
-- **Fallback 1:** Local Ollama — phi3:mini (no internet needed)
-- **Fallback 2:** HuggingFace Inference API (optional)
+- **Primary:** Groq API — `llama-3.3-70b-versatile` (fast, accurate, free tier)
+- **Fallback 1:** Local Ollama — `llama3.2:3b` (no internet needed)
+- **Fallback 2:** HuggingFace Inference API (set `HF_API_TOKEN` in `.env`)
 
 For a deeper technical explanation → [docs/architecture.md](docs/architecture.md)
 
@@ -46,7 +48,7 @@ For a deeper technical explanation → [docs/architecture.md](docs/architecture.
 ### `POST /api/chat`
 
 ```bash
-curl -k -X POST https://yourserver.com/scb/api/chat \
+curl -X POST http://localhost:5050/api/chat \
   -H "Content-Type: application/json" \
   -d '{
     "message": "Who is Sanchit Minocha?",
@@ -62,7 +64,7 @@ curl -k -X POST https://yourserver.com/scb/api/chat \
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `message` | string | required | The question to ask |
-| `conversation_id` | string | auto-generated | Pass back the returned ID to continue a conversation |
+| `conversation_id` | string | auto-generated | Pass back the returned ID for multi-turn conversation |
 | `top_k` | int | 7 | Number of RAG chunks to retrieve (max 10) |
 | `max_tokens` | int | 500 | Maximum tokens in the response |
 | `model` | string | from `.env` | Override the LLM (see accepted values below) |
@@ -82,8 +84,6 @@ curl -k -X POST https://yourserver.com/scb/api/chat \
 | `llama3.2:3b` | Ollama (local) | Requires `ollama pull llama3.2:3b` |
 | `mistralai/Mistral-7B-Instruct-v0.2` | HuggingFace | Requires `HF_API_TOKEN` in `.env` |
 
-If the requested model is unavailable, the system automatically falls back to the next configured backend.
-
 **Response:**
 ```json
 {
@@ -99,9 +99,9 @@ If the requested model is unavailable, the system automatically falls back to th
 
 | Endpoint | Method | Description |
 |----------|--------|-------------|
-| `/api/health` | GET | LLM status, index size, backend availability |
-| `/api/info` | GET | Assistant metadata and creator info |
-| `/api/rebuild-index` | POST | Rebuild RAG index after editing knowledge files |
+| `GET /api/health` | GET | LLM status, index size, backend availability |
+| `GET /api/info` | GET | Assistant metadata and creator info |
+| `POST /api/rebuild-index` | POST | Rebuild RAG index after editing knowledge files |
 
 ---
 
@@ -123,20 +123,77 @@ For full Apache deployment → [docs/deployment.md](docs/deployment.md)
 
 ---
 
+## Testing
+
+### Browser (easiest)
+
+Open `test.html` in any browser — it provides a full chat UI with model selector, source display, and health status. Works against the dev server or Apache:
+
+```
+# Dev server
+open test.html        # macOS
+xdg-open test.html    # Linux
+
+# Or just drag-and-drop into your browser
+```
+
+The default base URL in the tester is `http://localhost:5050`. You can change it in the Settings panel at the top of the page.
+
+### Terminal — quick checks
+
+The server uses a self-signed SSL certificate, so pass `-k` to skip certificate verification:
+
+```bash
+# Health check
+curl -sk https://f-hossain-3.ce.washington.edu/scb/api/health | python3 -m json.tool
+
+# Simple chat
+curl -sk -X POST https://f-hossain-3.ce.washington.edu/scb/api/chat \
+  -H "Content-Type: application/json" \
+  -d '{"message": "Tell me about RAT 3.0"}' | python3 -m json.tool
+
+# Multi-turn conversation (reuse conversation_id)
+curl -sk -X POST https://f-hossain-3.ce.washington.edu/scb/api/chat \
+  -H "Content-Type: application/json" \
+  -d '{"message": "What about GRILSS?", "conversation_id": "test-1"}' \
+  | python3 -m json.tool
+
+# Try a specific model
+curl -sk -X POST https://f-hossain-3.ce.washington.edu/scb/api/chat \
+  -H "Content-Type: application/json" \
+  -d '{"message": "What publications did Sanchit write in 2025?", "model": "llama-3.3-70b-versatile"}' \
+  | python3 -m json.tool
+
+# Rebuild the index after editing knowledge files
+curl -sk -X POST https://f-hossain-3.ce.washington.edu/scb/api/rebuild-index | python3 -m json.tool
+
+# Assistant info
+curl -sk https://f-hossain-3.ce.washington.edu/scb/api/info | python3 -m json.tool
+```
+
+For local dev server (`python app.py`), drop the `-k` and use `http://localhost:5050`.
+
+---
+
 ## Knowledge Base
 
 All knowledge about Sanchit lives in plain editable files:
 
 ```
 data/
-├── personal_data.json        ← hobbies, stories, opinions, FAQs — edit freely
-└── knowledge_base/
-    ├── profile.md            ← career, education, skills
-    ├── projects.md           ← project details
-    ├── about_ai.md           ← what this assistant is
-    ├── github.md             ← auto-fetched GitHub repos
-    └── Sanchit_CV.pdf        ← CV (auto-indexed as PDF)
+├── personal_data.json          ← hobbies, stories, opinions, FAQs — edit freely
+├── knowledge_base/
+│   ├── profile.md              ← career, education, skills
+│   ├── projects.md             ← project details (split by ## section)
+│   ├── about_ai.md             ← what this assistant is
+│   ├── github.md               ← auto-fetched GitHub repos
+│   └── Sanchit_CV.pdf          ← CV (auto-indexed as PDF)
+└── website_pages/
+    ├── publications.json       ← research publications (auto-indexed)
+    └── portfolios.json         ← portfolio projects (auto-indexed)
 ```
+
+Each `##`-headed section in Markdown files becomes one chunk. Publications and portfolio entries each become their own self-contained chunks — so asking about a specific paper retrieves exactly that paper's context.
 
 After editing any file, rebuild the index:
 
@@ -144,7 +201,7 @@ After editing any file, rebuild the index:
 python scripts/build_index.py
 ```
 
-For adding publications, fine-tuning the model, or adapting for a different person → [docs/personalization.md](docs/personalization.md)
+For adding more data, managing publications, or adapting for a different person → [docs/personalization.md](docs/personalization.md)
 
 ---
 
@@ -154,7 +211,7 @@ For adding publications, fine-tuning the model, or adapting for a different pers
 |------|-----|----------------------|
 | `.env` | Contains API keys (Groq, HuggingFace) | `.env.example` (placeholder keys) |
 | `data/processed/` | Generated ChromaDB vector store | Rebuilt by `build_index.py` |
-| `data/models/` | Downloaded ONNX model files (~90MB) | Rebuilt on first run |
+| `data/models/` | Downloaded ONNX model files (~90MB) | Auto-downloaded on first run |
 | `models/` | Fine-tuned model weights (GBs) | — |
 | `logs/` | Server logs | — |
 
@@ -171,15 +228,17 @@ sanchitai/
 ├── wsgi.py                   Apache mod_wsgi entry point
 ├── requirements.txt
 ├── .env.example              Safe config template (commit this)
+├── test.html                 Browser-based chat tester
 │
 ├── data/
 │   ├── personal_data.json    ← EDIT THIS to personalize
-│   └── knowledge_base/       Markdown + PDF knowledge files
+│   ├── knowledge_base/       Markdown + PDF knowledge files
+│   └── website_pages/        ← publications.json + portfolios.json
 │
 ├── src/
 │   ├── rag/                  Embeddings + ChromaDB + retriever
 │   ├── llm/                  Groq / Ollama / HuggingFace backends
-│   └── data/                 Document loading and chunking (MD + PDF)
+│   └── data/                 Document loading and chunking
 │
 ├── scripts/
 │   ├── build_index.py        Build RAG vector index

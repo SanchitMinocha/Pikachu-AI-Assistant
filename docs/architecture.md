@@ -16,54 +16,85 @@ User Question
       │
       ├─── 1. RETRIEVE ──────────────────────────────────────────────┐
       │         Augment query with recent conversation history        │
-      │         Embed query with Sentence-Transformers (ONNX)        │
-      │         Search ChromaDB vector store (cosine similarity)     │
-      │         Return top-K most relevant document chunks           │
+      │         Embed query with BAAI/bge-base-en-v1.5 (ONNX 768d)  │
+      │         Search ChromaDB (cosine similarity)                   │
+      │         Filter chunks below similarity threshold (0.3)        │
+      │         Log each chunk + score for debugging                  │
+      │         If nothing passes → tell LLM "no context found"       │
       │                                                              │
       ├─── 2. AUGMENT ───────────────────────────────────────────────┤
-      │         Format chunks as numbered, labelled context blocks   │
-      │         Append conversation history (last N turns)           │
+      │         Format as numbered, labelled context blocks           │
+      │         Include similarity score per chunk                    │
+      │         Append conversation history (last N turns)            │
       │         Apply system prompt (identity + strict grounding)    │
       │                                                              │
       └─── 3. GENERATE ──────────────────────────────────────────────┘
                 LLM generates a response grounded ONLY in context
-                Primary: Groq API (Llama 3.3 70B — fast, accurate)
-                Fallback 1: Local Ollama (phi3:mini — offline capable)
-                Fallback 2: HuggingFace API (optional)
+                Primary: Groq API (llama-3.3-70b-versatile)
+                Fallback 1: Local Ollama (llama3.2:3b — offline capable)
+                Fallback 2: HuggingFace API (optional, requires HF_API_TOKEN)
 ```
 
 ---
 
 ## Components
 
-### 1. Knowledge Base (`data/knowledge_base/` + `data/personal_data.json`)
+### 1. Knowledge Base
 
 All facts about Sanchit live here as plain text:
 
-| File | Contents |
-|------|----------|
-| `profile.md` | Education, career, skills, achievements |
-| `projects.md` | Detailed project descriptions |
-| `about_ai.md` | What this assistant is and how it was built |
-| `github.md` | Auto-fetched GitHub repos (via `collect_web_data.py`) |
-| `Sanchit_CV.pdf` | Full CV — auto-extracted and indexed as text chunks |
-| `personal_data.json` | Editable personal data: hobbies, stories, opinions, FAQs |
+| File | Contents | Chunking Strategy |
+|------|----------|------------------|
+| `data/knowledge_base/profile.md` | Education, career, skills, achievements | `##` section → 1 chunk |
+| `data/knowledge_base/projects.md` | Detailed project descriptions | `##` section → 1 chunk |
+| `data/knowledge_base/about_ai.md` | What this assistant is and how it was built | `##` section → 1 chunk |
+| `data/knowledge_base/github.md` | Auto-fetched GitHub repos | `##` section → 1 chunk |
+| `data/knowledge_base/Sanchit_CV.pdf` | Full CV — extracted as plain text | 500-char sliding window |
+| `data/personal_data.json` | Hobbies, stories, opinions, FAQs | One document per structured entry |
+| `data/website_pages/publications.json` | Research publications with abstracts | One document per publication |
+| `data/website_pages/portfolios.json` | Portfolio projects with details | One document per ~500-char section |
 
 ### 2. Document Loader (`src/data/loader.py`)
 
-Reads all knowledge files — Markdown, PDF, and JSON — splits them into ~500-character overlapping chunks, and prepares them for embedding. PDF text is extracted via `pypdf`. Chunking preserves sentence boundaries and ensures long documents fit within the LLM's context window.
+Reads all knowledge files and prepares them for embedding. Three chunking strategies are used:
+
+- **Markdown (`##` header splitting):** Each `##` section becomes one chunk. This keeps "Education", "Skills", "Publications List" etc. as coherent semantic units rather than character-sliced fragments. Sections > 1500 chars fall back to the sliding-window splitter.
+- **JSON (natural structure):** Publications and portfolios are serialized per-entry (title + authors + journal + abstract for publications; title + tagline + impact + description + tech + challenge + solution for portfolios). Each entry is one chunk that stays together, so "what did GRILSS achieve?" retrieves the full GRILSS entry.
+- **PDF (sliding window):** 500-char windows with 50-char overlap and sentence-boundary detection — used for the CV PDF where there are no semantic headers.
 
 ### 3. Embeddings (`src/rag/embeddings.py`)
 
-Uses **fastembed** with `sentence-transformers/all-MiniLM-L6-v2` (ONNX, 384-dimensional vectors). Converts text chunks and user queries into semantic vector representations — words with similar meaning land close together in vector space.
+Uses **fastembed** with `BAAI/bge-base-en-v1.5` (ONNX quantized, 768-dimensional vectors). This model significantly outperforms the older `all-MiniLM-L6-v2` (384-dim) on domain-specific retrieval with no GPU required — it runs on CPU via ONNX Runtime with ~90MB footprint.
+
+Model cache:
+- **Production (www-data):** `data/models/` (auto-downloaded on first request)
+- **Developer builds (other users):** `~/.cache/fastembed/` (config.py detects write permission automatically)
 
 ### 4. Vector Store (`src/rag/vectorstore.py`)
 
-**ChromaDB** stores the 390+ document embeddings on disk. At query time, cosine similarity search returns the top-K chunks most semantically related to the user's question in milliseconds.
+**ChromaDB** stores the 250+ document embeddings persistently on disk in `data/processed/vectorstore/`. At query time, cosine similarity search returns the top-K chunks most semantically related to the user's question in milliseconds. Chunks below `SIMILARITY_THRESHOLD` (default 0.3) are filtered out before being returned.
 
 ### 5. Retriever (`src/rag/retriever.py`)
 
-For follow-up questions ("what is the name of that tool?"), the retriever augments the query with the last few conversation turns before embedding — so context-dependent questions still retrieve the right chunks. Retrieved chunks are returned as numbered, labelled blocks (e.g. `[1. projects.md › projects]`) so the LLM can clearly distinguish between separate projects and sources.
+Before embedding, the raw user message goes through `build_retrieval_query()` which does two things:
+
+**Query cleaning** — strips noise that degrades retrieval quality:
+- Removes the person's name ("Is Sanchit Minocha...?" → already known topic)
+- Removes question scaffolding ("What is his...", "Does he have...") that pulls the embedding toward generic identity chunks rather than topical content
+
+**Selective history injection** — only for genuine follow-up questions, not self-contained ones. Prepending history to "What is his most impactful work?" injects topic noise; prepending it to "yes" or "other than that?" is essential. Two signals detect a follow-up:
+1. **Dangling pronouns** — "it", "that", "those", "this", "the project", etc. with no self-contained topic
+2. **Continuation phrases** — "yes", "sure", "tell me more", "go on", "what else?", "other than that?", etc.
+
+When either signal fires, the retrieval query is prefixed with both the last user message *and* a snippet of the last assistant response. Including the assistant's prior answer pushes the embedding toward *complementary* content — so "other than that?" after an answer about FRIENDS and poetry retrieves Chess and Cooking rather than the same hobby chunks again.
+
+**Similarity threshold filtering:** chunks below 0.3 cosine similarity are dropped. If no chunks pass, `format_context()` returns an explicit `"[No relevant information found in the knowledge base for this query.]"` string — so the LLM is directly told there is no context rather than silently receiving nothing.
+
+**Debug logging:** every retrieval logs each chunk with its similarity score, source, and section label. Check `logs/app.log` to diagnose retrieval failures:
+```
+INFO  [1] score=0.8460 | projects.md › Publications | '## Publications  Sanchit has 15+ peer-reviewed...'
+INFO  [2] score=0.7266 | publications.json › GRILSS | 'Publication: GRILSS: opening the gateway to...'
+```
 
 ### 6. LLM Assistant (`src/llm/assistant.py`)
 
@@ -91,12 +122,12 @@ If the requested model is unavailable, the system automatically falls back to th
 
 ### 7. Flask API (`app.py`)
 
-REST API with four endpoints, deployed via Apache mod_wsgi:
+REST API with four endpoints, deployable via `python app.py` (dev) or Apache mod_wsgi (production):
 
 | Endpoint | Method | Purpose |
 |----------|--------|---------|
 | `/api/chat` | POST | Main chat — accepts `message`, `model`, `conversation_id`, `top_k`, `max_tokens` |
-| `/api/health` | GET | System status — LLM availability, index size |
+| `/api/health` | GET | System status — LLM availability, index size, backend |
 | `/api/info` | GET | Assistant metadata |
 | `/api/rebuild-index` | POST | Rebuild RAG index after data changes |
 
@@ -104,13 +135,26 @@ REST API with four endpoints, deployed via Apache mod_wsgi:
 
 ## Anti-Hallucination Design
 
-Three layers prevent the assistant from making things up:
+Four layers prevent the assistant from making things up:
 
-1. **Strict system prompt** — explicitly instructs the LLM to answer only from the provided context and say "I don't have that detail" when context is insufficient. The model is told which projects it is NOT (RAT 3.0, GRILSS, RECLAIM) to prevent self-confusion.
+1. **Explicit "no context" signal** — if nothing passes the similarity threshold, the LLM receives `[No relevant information found in the knowledge base for this query.]` and is instructed to say "I don't have that detail on hand" rather than inventing an answer from pre-trained knowledge.
 
-2. **Numbered, labelled context chunks** — each retrieved chunk is formatted as `[N. source › section]` so the LLM can clearly attribute facts to specific sources and avoid conflating content from different projects.
+2. **Strict system prompt** — explicitly instructs the LLM to answer only from the provided context. The fallback phrase ("I don't have that detail on hand") is tied specifically to the `[No relevant information found...]` marker — if any context was retrieved, the LLM must use it and answer rather than hedging. The model is also told which projects it is NOT (RAT 3.0, GRILSS, RECLAIM) to prevent self-confusion.
 
-3. **Larger model (70B)** — `llama-3.3-70b-versatile` follows nuanced grounding instructions far more reliably than smaller 8B models, which tend to paraphrase and fill gaps with plausible-sounding but incorrect details.
+3. **Numbered, labelled context chunks with scores** — each retrieved chunk is formatted as `[N. source › section (score: 0.84)]` so the LLM can clearly attribute facts to specific sources and avoid conflating content from different projects.
+
+4. **Large model (70B)** — `llama-3.3-70b-versatile` follows nuanced grounding instructions far more reliably than smaller 8B models, which tend to fill gaps with plausible-sounding but incorrect details.
+
+---
+
+## Why `BAAI/bge-base-en-v1.5` over `all-MiniLM-L6-v2`?
+
+| Model | Dims | MTEB Score | Domain Retrieval | Size |
+|-------|------|-----------|-----------------|------|
+| `all-MiniLM-L6-v2` | 384 | ~56 | Good general | ~60MB |
+| `BAAI/bge-base-en-v1.5` | 768 | ~63 | Significantly better on technical/domain text | ~90MB |
+
+The higher-dimensional BGE model captures more nuanced semantic relationships — crucial for domain-specific queries like "what did Sanchit's RECLAIM framework achieve?" where the query and the chunk share little word overlap but high conceptual overlap.
 
 ---
 

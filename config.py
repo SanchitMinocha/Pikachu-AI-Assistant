@@ -3,8 +3,14 @@ from pathlib import Path
 
 BASE_DIR = Path(__file__).parent
 
-# Redirect HuggingFace/fastembed model cache into the project so www-data can access it
-_models_dir = str(BASE_DIR / "data" / "models")
+# Redirect HuggingFace/fastembed model cache into the project so www-data can access it.
+# Fall back to ~/.cache/fastembed when the project models dir isn't writable by the
+# current user (e.g. running build_index.py as a non-www-data developer account).
+_project_models_dir = str(BASE_DIR / "data" / "models")
+if os.access(_project_models_dir, os.W_OK):
+    _models_dir = _project_models_dir
+else:
+    _models_dir = os.path.join(os.path.expanduser("~"), ".cache", "fastembed")
 os.environ.setdefault("HF_HOME", _models_dir)
 os.environ.setdefault("FASTEMBED_CACHE_PATH", _models_dir)
 
@@ -19,6 +25,7 @@ if _env_file.exists():
                 os.environ.setdefault(_k.strip(), _v.strip())
 DATA_DIR = BASE_DIR / "data"
 KNOWLEDGE_BASE_DIR = DATA_DIR / "knowledge_base"
+WEBSITE_PAGES_DIR = DATA_DIR / "website_pages"
 PROCESSED_DIR = DATA_DIR / "processed"
 VECTORSTORE_DIR = PROCESSED_DIR / "vectorstore"
 PERSONAL_DATA_PATH = DATA_DIR / "personal_data.json"
@@ -38,10 +45,10 @@ HF_MODEL_ID = os.getenv("HF_MODEL_ID", "mistralai/Mistral-7B-Instruct-v0.2")
 
 # Groq API (fast free tier)
 GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
-GROQ_MODEL = os.getenv("GROQ_MODEL", "llama-3.1-8b-instant")
+GROQ_MODEL = os.getenv("GROQ_MODEL", "llama-3.3-70b-versatile")
 
 # --- Embeddings ---
-EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL", "sentence-transformers/all-MiniLM-L6-v2")
+EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL", "BAAI/bge-base-en-v1.5")
 CHUNK_SIZE = 500
 CHUNK_OVERLAP = 50
 

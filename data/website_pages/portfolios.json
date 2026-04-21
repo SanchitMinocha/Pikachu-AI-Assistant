@@ -1,0 +1,250 @@
+[
+  {
+    "id": "rat",
+    "title": "RAT: Satellite-based Reservoir Monitoring",
+    "meta": "Open-Source Python Package",
+    "tagline": "Tracking 1,000+ reservoirs globally · Used at NASA JPL",
+    "impact": "Replaced $M field surveys for 1,000+ reservoirs worldwide — adopted by NASA JPL, cutting monitoring costs and delivering real-time water intelligence at global scale.",
+    "hoverGif": "assets/img/portfolio/rat/rat_demo.gif",
+    "description": "RAT is a production-grade open-source Python package for satellite-based reservoir monitoring — replacing costly field surveys with an automated, cloud-native ML pipeline. Tracks surface water area, inflow, and outflow for thousands of reservoirs globally in near real-time. Adopted by NASA JPL and published in a peer-reviewed journal.",
+    "coverImage": "assets/img/portfolio/rat/RAT_WI_1.jpeg",
+    "detailPage": "portfolio-details.html?project=rat",
+    "filters": ["Software", "AI / ML"],
+    "gallery": "portfolio-gallery",
+    "details": {
+      "sliderImages": [
+        "assets/img/portfolio/rat/RAT_Applied_areas.jpeg",
+        "assets/img/portfolio/rat/inflow.png",
+        "assets/img/portfolio/rat/outflow.png",
+        "assets/img/portfolio/rat/surface_area.png"
+      ],
+      "galleryImages": [
+        "assets/img/portfolio/rat/RAT_WI_1.jpeg",
+        "assets/img/portfolio/rat/RAT_WI_2.jpeg",
+        "assets/img/portfolio/rat/RAT_WI_3.jpeg",
+        "assets/img/portfolio/rat/RAT_WI_4.jpeg",
+        "assets/img/portfolio/rat/RAT_3_Advancements.jpeg",
+        "assets/img/portfolio/rat/RAT_Concept.png"
+      ],
+      "techStack": ["Python", "Google Cloud Services", "Remote Sensing", "Machine Learning", "Cloud Computing"],
+      "category": "Software | AI/ML | Remote Sensing",
+      "date": "July 2023",
+      "client": "Open Source Contribution",
+      "projectTitle": "RAT: Satellite-based Reservoir Monitoring",
+      "websiteUrl": "https://depts.washington.edu/saswe/rat/",
+      "websiteLabel": "www.satellitedams.net",
+      "badges": [
+        { "url": "https://anaconda.org/conda-forge/rat", "imgSrc": "https://img.shields.io/badge/package-rat-51A1B0.svg", "alt": "Package" },
+        { "url": "https://anaconda.org/conda-forge/rat", "imgSrc": "https://img.shields.io/conda/dn/conda-forge/rat.svg", "alt": "Downloads" },
+        { "url": "https://anaconda.org/conda-forge/rat", "imgSrc": "https://img.shields.io/conda/vn/conda-forge/rat.svg", "alt": "Version" },
+        { "url": "https://anaconda.org/conda-forge/rat", "imgSrc": "https://img.shields.io/conda/pn/conda-forge/rat.svg", "alt": "Platforms" },
+        { "url": "https://rat-satellitedams.readthedocs.io/en/latest/?badge=latest", "imgSrc": "https://readthedocs.org/projects/rat-satellitedams/badge/?version=latest", "alt": "Docs" },
+        { "url": "https://anaconda.org/conda-forge/rat", "imgSrc": "https://anaconda.org/conda-forge/rat/badges/latest_release_date.svg", "alt": "Release Date" },
+        { "url": "https://github.com/UW-SASWE/RAT", "imgSrc": "https://img.shields.io/github/stars/UW-SASWE/RAT?style=social", "alt": "Stars" }
+      ],
+      "overviewBase": "RAT is a scalable, open-source platform for satellite-based reservoir monitoring, enabling automated tracking of surface water dynamics across thousands of reservoirs globally. By replacing manual, field-based monitoring with a real-time, data-driven pipeline, it significantly reduces operational costs and enables more efficient water resource management at scale.",
+      "overviewExpanded": "Reservoirs are critical infrastructure for water supply, energy generation, and flood control, yet monitoring them at scale remains costly and operationally challenging. RAT addresses this by delivering a cloud-based, automated system that uses satellite data to track reservoir dynamics in near real-time. By integrating geospatial analytics, cloud computing, and data science, the platform enables consistent, high-resolution monitoring across regions. This scalable approach has the potential to save millions to billions of dollars globally by reducing reliance on manual surveys, improving decision-making, and minimizing risks associated with water mismanagement.",
+      "challenge": "Traditional reservoir monitoring relies heavily on in-situ measurements and manual surveys, which are expensive, time-intensive, and often unavailable in remote or resource-constrained regions. This leads to data gaps, delayed insights, and inefficient resource allocation. Existing satellite-based approaches are often fragmented, lack standardization, and are difficult to scale, while processing large volumes of geospatial data requires significant infrastructure and expertise—limiting their adoption in operational settings.",
+      "solution": "RAT provides a unified, cloud-enabled pipeline that automates the ingestion, processing, and analysis of satellite data to monitor reservoir dynamics at scale. By transforming raw imagery into actionable insights, it enables water managers, utilities, and policymakers to make faster, data-driven decisions. The platform reduces monitoring costs, improves operational efficiency, and supports proactive risk management for droughts, floods, and infrastructure planning. Its open-source design ensures transparency, scalability, and adaptability across regions, making it a practical solution for large-scale water resource management.",
+      "featuresLeft": [
+        "First-of-its-kind",
+        "Scalable",
+        "Robust"
+      ],
+      "featuresRight": [
+        "Open-source",
+        "User-Friendly",
+        "End-to-End"
+      ],
+      "liveProjectLink": "https://depts.washington.edu/saswe/rat/",
+      "codeLink": "https://github.com/UW-SASWE/RAT",
+      "paperLink": "https://doi.org/10.1080/28375807.2025.2487762",
+      "docsLink": "https://rat-satellitedams.readthedocs.io/en/latest/"
+    }
+  },
+  {
+    "id": "grilss",
+    "title": "GRILSS: Reservoir Sedimentation Dataset",
+    "meta": "AGU-Awarded Dataset · LLM Pipeline",
+    "tagline": "AGU Best Dataset Award · 1,000+ reservoirs · LLM-powered extraction",
+    "impact": "Won AGU's Best Dataset Award — world's first AI-curated sedimentation dataset, unlocking $B-scale infrastructure risk models across 1,000+ global reservoirs.",
+    "hoverGif": "assets/img/portfolio/grilss/grilss_visualiser.gif",
+    "description": "GRILSS is the world's first open dataset of global reservoir sedimentation records — 1,000+ reservoirs compiled from hundreds of multilingual documents using LLM-powered extraction and Agentic AI. Recognized with the AGU Impactful Earth Science Dataset Award. Enables large-scale ML modeling of infrastructure risk worth billions annually.",
+    "coverImage": "assets/img/portfolio/grilss/grilss_WI_1.png",
+    "detailPage": "portfolio-details.html?project=grilss",
+    "filters": ["Datasets", "Visualization"],
+    "gallery": "portfolio-gallery",
+    "details": {
+      "sliderImages": [
+        "assets/img/portfolio/grilss/grilss_visualiser.gif"
+      ],
+      "galleryImages": [
+        "assets/img/portfolio/grilss/grilss_WI_1.png",
+        "assets/img/portfolio/grilss/grilss_WI_2.png",
+        "assets/img/portfolio/grilss/grilss_WI_3.png",
+        "assets/img/portfolio/grilss/grilss_WI_4.png",
+        "assets/img/portfolio/grilss/GRILSS_logo.png"
+      ],
+      "techStack": [
+        "Python",
+        "Data Engineering",
+        "LLMs",
+        "Agentic AI",
+        "Geospatial Analysis",
+        "Data Curation"
+      ],
+      "category": "Dataset | Data Engineering | Agentic AI",
+      "date": "October 2024",
+      "client": "Open Source Contribution",
+      "projectTitle": "GRILSS: Global Reservoir Sedimentation Dataset",
+      "websiteUrl": "https://uw-saswe.github.io/GRILSS/",
+      "websiteLabel": "Explore Dataset",
+      "badges": [
+        { "url": "https://github.com/UW-SASWE/GRILSS", "imgSrc": "https://img.shields.io/badge/%F0%9F%8F%86_Awarded-Impactful_Earth_Science_Dataset_(AGU)-gold", "alt": "AGU Award" },
+        { "url": "https://github.com/UW-SASWE/GRILSS", "imgSrc": "https://img.shields.io/badge/License-CC%20BY%204.0-coral.svg", "alt": "License CC BY 4.0" },
+        { "url": "https://github.com/UW-SASWE/GRILSS", "imgSrc": "https://img.shields.io/badge/Version-1.2-turquoise", "alt": "Version 1.2" },
+        { "url": "https://github.com/UW-SASWE/GRILSS", "imgSrc": "https://img.shields.io/badge/Open%20Access-Available-blue", "alt": "Open Access" },
+        { "url": "https://github.com/UW-SASWE/GRILSS", "imgSrc": "https://img.shields.io/badge/Free%20Data-Available-green", "alt": "Free Data" },
+        { "url": "https://github.com/UW-SASWE/GRILSS", "imgSrc": "https://img.shields.io/badge/Open%20Source-Available-brightgreen", "alt": "Open Source" }
+      ],
+      "overviewBase": "GRILSS is a global, structured dataset for reservoir sedimentation, transforming fragmented and inaccessible records into a scalable, searchable data asset for analysis and decision-making.",
+      "overviewExpanded": "Reservoir sedimentation directly impacts storage capacity, hydropower generation, and long-term infrastructure performance, yet data remains scattered and difficult to access. GRILSS addresses this by aggregating and standardizing sedimentation records for over 1,000 reservoirs worldwide into a unified, geospatially enabled dataset. By converting fragmented, multilingual sources into a structured and machine-readable format, the dataset enables large-scale analysis, modeling, and decision support. This improves visibility into sedimentation risks and has the potential to inform more efficient reservoir management, avoiding costly capacity losses and supporting billions of dollars in infrastructure planning and maintenance decisions.",
+      "challenge": "Sedimentation data is highly fragmented across reports, academic papers, and gray literature, often stored in non-standard formats and multiple languages. Key information is frequently buried in unstructured documents, making it difficult to extract, validate, and integrate at scale. Inconsistent naming conventions, missing spatial references, and lack of machine-readable formats further limit the ability to conduct global analyses or build reliable predictive models, leading to inefficient planning and increased operational risk.",
+      "solution": "GRILSS uses a scalable data engineering pipeline that combines multilingual data extraction through large language models, and geospatial validation to standardize sedimentation records across diverse sources. The dataset unifies heterogeneous information into a consistent schema, links records to reservoir geometries, and enables direct integration into analytical workflows. A companion interactive visualizer, built using Agentic AI tools, further enhances accessibility, allowing stakeholders to explore trends and insights without specialized tools. By making sedimentation data usable at scale, GRILSS supports data-driven decision-making in reservoir management, infrastructure planning, and risk assessment.",
+      "featuresLeft": [
+        "Global Coverage",
+        "First-of-its-kind",
+        "Compiled from hundreds of sources"
+      ],
+      "featuresRight": [
+        "Using LLMs & Agentic AI",
+        "Interactive visualizer",
+        "Spatial features and geometries"
+      ],
+      "liveProjectLink": "https://uw-saswe.github.io/GRILSS/",
+      "codeLink": "https://github.com/UW-SASWE/GRILSS",
+      "paperLink": "https://doi.org/10.5194/essd-17-1743-2025",
+      "docsLink": ""
+    }
+  },
+  {
+  "id": "reclaim",
+  "title": "RECLAIM: Predicting Reservoir Capacity Loss",
+  "meta": "End-to-End ML Pipeline · Live Web App",
+  "tagline": "R²=0.86 · XGBoost/LightGBM/CatBoost · Deployed Django app",
+  "impact": "R²=0.86 ML model deployed as a live web app — tells operators exactly which reservoirs need costly surveys, saving millions in misdirected spend annually.",
+  "hoverGif": "assets/img/portfolio/reclaim/reclaim_tutorial.gif",
+  "description": "RECLAIM is a globally scalable end-to-end ML framework that predicts reservoir sedimentation using satellite time-series — XGBoost, LightGBM, and CatBoost ensemble achieving R²=0.86. Deployed as a live Django web app. Prioritizes which reservoirs need costly bathymetric surveys, saving millions in operational costs annually.",
+  "coverImage": "assets/img/portfolio/reclaim/RECLAIM_Web_app.png",
+  "detailPage": "portfolio-details.html?project=reclaim",
+  "filters": ["aiml", "software"],
+  "gallery": "portfolio-gallery",
+  "details": {
+    "sliderImages": [
+      "assets/img/portfolio/reclaim/reclaim_tutorial.gif"
+    ],
+    "galleryImages": [
+      "assets/img/portfolio/reclaim/RECLAIM_performance1.jpg",
+      "assets/img/portfolio/reclaim/RECLAIM_performance2.png",
+      "assets/img/portfolio/reclaim/RECLAIM_performance3.png",
+      "assets/img/portfolio/reclaim/Reclaim_logo.png"
+    ],
+    "techStack": [
+      "Machine Learning",
+      "Python",
+      "Statistical Techniques",
+      "Time Series Analysis",
+      "XGBoost",
+      "LightGBM",
+      "CatBoost"
+    ],
+    "category": "AI/ML | Software | Data Engineering",
+    "date": "October 2025",
+    "client": "Open Source Contribution",
+    "projectTitle": "RECLAIM: Predicting Reservoir Capacity Loss",
+    "websiteUrl": "https://f-hossain-3.ce.washington.edu/reclaim/estimator",
+    "websiteLabel": "Real-Time ML Prediction Web App <span style='color: red;'>- Recently Launched!</span>",
+    "badges": [{"imgSrc": "https://img.shields.io/badge/Workflow-ML--Deployment-blue", "alt":"Pipeline Workflow"},
+    {"imgSrc": "https://img.shields.io/badge/python-3.10-blue.svg", "alt":"Python 3.10"},
+    {"imgSrc": "https://img.shields.io/badge/serving-Django--4.2-092e20", "alt":"Django serving"}],
+    "overviewBase": "RECLAIM is a scalable machine learning framework that predicts reservoir sedimentation and capacity loss using satellite data, enabling cost-effective monitoring and risk assessment across large scale water infrastructure.",
+
+  "overviewExpanded": "Reservoir sedimentation is a critical but under-monitored risk that directly impacts water supply, hydropower generation, and long-term infrastructure performance. As storage capacity declines, utilities and governments face significant economic losses and operational challenges. RECLAIM addresses this gap by combining historical sedimentation records with multi-decadal satellite observations and geospatial data to deliver scalable, data-driven predictions of capacity loss. By enabling rapid assessment across reservoirs globally, the framework supports proactive planning, reduces monitoring costs, and helps prevent costly failures in water resource systems—potentially influencing billions of dollars in infrastructure management and investment decisions.",
+
+  "challenge": "Assessing reservoir sedimentation today, using bathymetric surveys, is similar to relying on CT scans in healthcare—highly accurate, but expensive, time-intensive, and impractical to use at scale. These surveys provide precise measurements, but most reservoirs are only surveyed occasionally due to cost and logistical constraints. As a result, operators lack continuous visibility into capacity loss across their assets. A more scalable approach—analogous to ultrasound—can provide faster, lower-cost insights, enabling frequent monitoring and better-informed decisions. Without such solutions, organizations face inefficient resource allocation, delayed interventions, and increased operational and financial risk.",
+
+  "solution": "RECLAIM introduces a scalable, data-driven alternative that complements traditional surveys by using machine learning and satellite observations to estimate sedimentation and capacity loss across large reservoir networks. It enables stakeholders to screen thousands of assets, identify high-risk reservoirs, and prioritize where detailed surveys and mitigation efforts will deliver the greatest return. By transforming sparse data into actionable insights, RECLAIM supports more efficient resource allocation, reduces monitoring costs, and enables proactive, evidence-based management of water infrastructure systems.",
+    "featuresLeft": [
+      "First-of-its-kind",
+      "Globally Scalable",
+      "CI/CD Pipeline"
+    ],
+    "featuresRight": [
+      "End-to-End ML Pipeline",
+      "Python Package",
+      "Potential to save billions of dollars"
+    ],
+    "liveProjectLink": "https://f-hossain-3.ce.washington.edu/reclaim/estimator",
+    "codeLink": "https://github.com/UW-SASWE/RECLAIM",
+    "paperLink": "https://papers.ssrn.com/sol3/papers.cfm?abstract_id=5623518",
+    "docsLink": "https://reclaimio.readthedocs.io/en/latest/"
+  }
+},
+  {
+  "id": "damnet",
+  "title": "DAMNET: Global Dam Network Explorer",
+  "meta": "Network Analytics · Geospatial Viz",
+  "tagline": "10,000+ dams mapped · Featured in Water Power Magazine",
+  "impact": "Interactive risk map of 10,000+ dams' cascade dependencies — featured in Water Power Magazine, enabling infrastructure planners to trace failure chains in seconds.",
+  "hoverGif": "assets/img/portfolio/damnet/damnet_video.gif",
+  "description": "DAMNET is an interactive geospatial tool built with graph analytics, Leaflet, and D3.js — mapping hydrological connectivity of 10,000+ dams globally. Users trace upstream/downstream dependencies for infrastructure risk and disaster-response planning. Featured in Water Power Magazine and on YouTube.",
+  "coverImage": "assets/img/portfolio/damnet/Damnet_1.jpeg",
+  "detailPage": "portfolio-details.html?project=damnet",
+  "filters": ["Visualization"],
+  "gallery": "portfolio-gallery",
+  "details": {
+    "sliderImages": [
+      "assets/img/portfolio/damnet/damnet_video.gif"
+    ],
+    "galleryImages": [
+      "assets/img/portfolio/damnet/Damnet_inspiration.jpg",
+      "assets/img/portfolio/damnet/Damnet_1.jpeg",
+      "assets/img/portfolio/damnet/Damnet_2.jpeg",
+      "assets/img/portfolio/damnet/Damnet_3.jpeg"
+    ],
+    "techStack": [
+      "Network Theory",
+      "Graph Analytics",
+      "JavaScript",
+      "Leaflet",
+      "D3.js",
+      "Data Visualization"
+    ],
+    "category": "Visualization | Network Analysis | Dataset",
+    "date": "July 2024",
+    "client": "University of Washington",
+    "projectTitle": "DAMNET: Global Dam Network Explorer",
+    "websiteUrl": "https://depts.washington.edu/saswe/damnet/",
+    "websiteLabel": "Interactive Visualization Tool",
+    "badges": [],
+    "overviewBase": "DAMNET is an interactive web-based visualization platform that helps users explore how dams are hydrologically connected across the world through rivers and canals.",
+    "overviewExpanded": "Understanding how dams are connected is essential for managing water quality, infrastructure risk, and downstream impacts. DAMNET visualizes these interdependencies at the global scale, allowing users to inspect how a given dam influences and is influenced by other dams through upstream and downstream flow paths. Built using global dam records and flow-direction data, the tool translates complex hydrologic connectivity into an intuitive map interface that supports rapid exploration by researchers, planners, and decision-makers.",
+    "challenge": "Dam systems do not operate in isolation. A failure, release, contamination event, or low-storage condition at one structure can cascade through connected infrastructure downstream. Yet these dependencies are often not publicly available in geospatial datasets and difficult to interpret at scale. There was no intuitive global visualization that allowed users to quickly inspect dam-to-dam connectivity and understand network effects in a decision-relevant way.",
+    "solution": "DAMNET addresses this gap through an interactive geospatial application that reveals direct and network-wide dam connections in a simple visual format. Users can hover to inspect dam metadata, click to view connected infrastructure, and distinguish upstream and downstream relationships to better understand hydrologic dependency chains. The result is a research-driven decision-support interface that makes large-scale dam connectivity analysis accessible, interpretable, and actionable.",
+    "featuresLeft": [
+      "First-of-its-kind",
+      "Global dam network explorer",
+      "Featured in International Media"
+    ],
+    "featuresRight": [
+      "Intutive color coding",
+      "Unique Idea",
+      "Supports risk and resilience analysis"
+    ],
+    "liveProjectLink": "https://depts.washington.edu/saswe/damnet/",
+    "codeLink": "https://observablehq.com/d/acb4f89c6040069c",
+    "paperLink": "https://www.waterpowermagazine.com/analysis/reimagining-dams-as-transit-hubs-visualising-global-water-networks-with-damnet/",
+    "docsLink": "https://www.youtube.com/watch?v=ZrleaaAS06Q"
+  }
+}
+]

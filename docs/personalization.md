@@ -8,34 +8,28 @@ The assistant is designed to be fully customizable. All personal knowledge lives
 
 ### Add hobbies, facts, opinions, stories
 
-Edit `data/personal_data.json`. Look for the fields with `ADD_..._HERE` placeholders:
+Edit `data/personal_data.json`. Look for fields with `ADD_..._HERE` placeholders:
 
 ```json
 {
   "hobbies": [
     "Poetry and creative writing",
-    "Hiking",
-    "Chess",
-    "Playing guitar"
+    "Hiking"
   ],
-
   "personal_facts": [
     "Born and raised in Chandigarh, India",
     "Favourite book is 'The Alchemist' by Paulo Coelho"
   ],
-
   "personal_stories": [
     {
       "title": "Why I pivoted to water research",
       "story": "One afternoon in 2021, I was looking at satellite images of shrinking reservoirs..."
     }
   ],
-
   "opinions": {
-    "on_ai": "LLMs are only as good as the data behind them. RAG is what makes them actually useful for specific domains.",
+    "on_ai": "LLMs are only as good as the data behind them.",
     "on_climate": "Water scarcity is the most underrated consequence of climate change."
   },
-
   "frequently_asked_questions": [
     {
       "question": "What is Sanchit's favourite programming language?",
@@ -45,54 +39,93 @@ Edit `data/personal_data.json`. Look for the fields with `ADD_..._HERE` placehol
 }
 ```
 
-FAQs are the most reliable way to ensure accurate, grounded answers to specific questions — the LLM will find them directly in the retrieved context.
+FAQs are the most reliable way to ensure accurate answers to specific questions — each FAQ entry becomes its own indexed document and is retrieved directly when someone asks a matching question.
 
 After editing, rebuild the index:
 
 ```bash
-sudo -u www-data bash -c "cd /var/www/html/scb && venv/bin/python scripts/build_index.py"
-sudo systemctl restart apache2
+source venv/bin/activate
+python scripts/build_index.py
 ```
+
+---
+
+## Update Publications
+
+Publications live in `data/website_pages/publications.json`. Each entry is automatically indexed as a self-contained chunk (title + authors + journal + year + abstract) — so queries like *"what papers did Sanchit publish in 2025?"* retrieve the exact publication entries.
+
+Format for a new entry:
+
+```json
+{
+  "title": "Your Paper Title",
+  "authors": "<strong>Sanchit Minocha</strong>, Co-Author Name",
+  "journal": "Journal Name, Volume(Issue), Pages, Year.",
+  "doi": "https://doi.org/...",
+  "pdf": "",
+  "abstract": "Full abstract text here — this is what the model retrieves.",
+  "year": "2025"
+}
+```
+
+After editing, rebuild the index. No other changes needed.
+
+---
+
+## Update Portfolio Projects
+
+Portfolio projects live in `data/website_pages/portfolios.json`. Each entry is automatically indexed. The following fields are included in retrieval context:
+
+- `title`, `meta`, `tagline`, `impact`, `description`
+- `details.techStack`
+- `details.overviewBase`
+- `details.challenge`
+- `details.solution`
+
+Bare URLs are excluded from chunks — they don't help retrieval and cause degenerate chunking.
 
 ---
 
 ## Add New Knowledge Files
 
-Drop any `.md` or `.pdf` file into `data/knowledge_base/` — it will be automatically indexed on the next build. Use this for:
+Drop any `.md` or `.pdf` file into `data/knowledge_base/` — it will be automatically indexed on the next build.
 
-- Publications list (`publications.md`)
-- Interview write-ups
-- Blog post summaries
-- Detailed project write-ups
-- CV / resume (`Sanchit_CV.pdf` is already included)
-
-Example `data/knowledge_base/publications.md`:
+**Markdown files** are split by `##` headers — each section becomes one chunk. Structure your file with clear `##` headings:
 
 ```markdown
-# Sanchit Minocha – Publications
+# Sanchit Minocha – Additional Notes
 
-## 2024
+## Teaching Experience
 
-### RAT 3.0: A Scalable Satellite-based Reservoir Monitoring Tool
-- **Journal:** Journal of Hydrology
-- **Summary:** Describes the architecture and validation of RAT 3.0...
+Sanchit has been a Teaching Assistant for CEWA 565 (Remote Sensing for Water Resources) at UW...
 
-## 2023
-...
+## Awards
+
+- IIT Roorkee Gold Medal (2019)
+- AGU Outstanding Student Presentation Award (2023)
 ```
+
+**PDF files** are chunked using a sliding window — works well for CVs and papers.
+
+Use this for:
+- Additional project write-ups
+- Teaching notes
+- Interview write-ups
+- Any long-form biographical content
 
 ---
 
 ## Keeping Answers Accurate and Grounded
 
-The assistant is configured to answer **only from retrieved context** — it will not hallucinate or fill gaps with invented facts. To keep answers accurate:
+The assistant answers **only from retrieved context** — it never hallucinate or fills gaps with invented facts. To keep answers accurate:
 
-- **For specific facts** (project names, dates, publications): add them as FAQ entries in `personal_data.json`. FAQ entries are loaded as individual high-priority documents and are always retrieved first for matching questions.
-- **For broad topics** (career, skills, personality): keep `profile.md` and `projects.md` up to date.
-- **For the CV**: replace `data/knowledge_base/Sanchit_CV.pdf` with an updated version and rebuild the index.
+- **For specific facts** (project names, dates, publications): add them as FAQ entries in `personal_data.json`. FAQ entries are loaded as individual high-priority documents.
+- **For broad topics** (career, skills, personality): keep `profile.md` and `projects.md` up to date, using `##` headers to organize sections.
+- **For publications**: keep `data/website_pages/publications.json` updated — each entry is one chunk, so full abstract text is indexed and retrievable.
+- **For the CV**: replace `data/knowledge_base/Sanchit_CV.pdf` with an updated version and rebuild.
 - **For follow-up questions**: the retriever automatically uses recent conversation history to find the right context — no special handling needed.
 
-After any update, always rebuild:
+After any update, rebuild:
 
 ```bash
 python scripts/build_index.py
@@ -107,16 +140,34 @@ To pull the latest repos from GitHub:
 ```bash
 source venv/bin/activate
 python scripts/collect_web_data.py
-sudo -u www-data bash -c "cd /var/www/html/scb && venv/bin/python scripts/build_index.py"
+python scripts/build_index.py
 ```
 
-This updates `data/knowledge_base/github.md` with your latest repositories.
+This updates `data/knowledge_base/github.md` with your latest repositories and re-indexes everything.
+
+---
+
+## Debug Retrieval Issues
+
+If the assistant is giving wrong or vague answers, check what chunks are actually being retrieved:
+
+```bash
+# All retrieval is logged at INFO level — watch live
+tail -f logs/app.log | grep -E 'score=|No chunks'
+```
+
+Each line shows the similarity score, source file, section, and first 120 characters of the chunk. If the expected chunk isn't appearing in the top-7, the answer will be wrong no matter how good the LLM is.
+
+Common fixes:
+- **Low scores for specific topics:** Add an FAQ entry in `personal_data.json` — FAQ entries are very reliably retrieved for exact question matches.
+- **Publications not appearing:** Make sure `data/website_pages/publications.json` has complete abstract text (not just title + journal).
+- **Old data persisting:** Run `python scripts/build_index.py` to rebuild — the `--no-clear` flag appends without wiping.
 
 ---
 
 ## Optional: Fine-Tune the Model
 
-For deeper personality/style customization beyond RAG, you can LoRA fine-tune a small model on your personal Q&A data. Note: this is optional — RAG alone already provides accurate, grounded answers.
+For deeper personality/style customization beyond RAG, you can LoRA fine-tune a small model on your personal Q&A data. RAG alone already provides accurate, grounded answers — fine-tuning is purely for style.
 
 ### Step 1 — Generate training data
 
@@ -125,18 +176,15 @@ source venv/bin/activate
 python scripts/fine_tune.py --data-only
 ```
 
-This creates `models/sanchitai-ft/training_data/train.jsonl` from your `personal_data.json`. Inspect it to make sure the Q&A pairs look right.
+This creates `models/sanchitai-ft/training_data/train.jsonl` from your `personal_data.json`.
 
 ### Step 2 — Run fine-tuning (GPU recommended)
 
 ```bash
-# Install fine-tuning dependencies first
 pip install unsloth transformers datasets peft trl accelerate bitsandbytes
 
-# Fine-tune phi3:mini (fastest, good quality)
 python scripts/fine_tune.py --model phi3 --output ./models/sanchitai-ft
-
-# Or fine-tune Llama 3.2 3B (better quality)
+# Or for better quality:
 python scripts/fine_tune.py --model llama3.2 --output ./models/sanchitai-ft
 ```
 
@@ -153,8 +201,6 @@ In `.env`:
 OLLAMA_MODEL=sanchitai
 ```
 
-The fine-tuned model will now be used as the local fallback (or primary if `LLM_BACKEND=ollama`).
-
 ---
 
 ## Adapting for a Different Person
@@ -163,6 +209,7 @@ This project can be forked and used as a personal AI assistant template for anyo
 
 1. Replace all content in `data/knowledge_base/` with your own profile
 2. Replace `data/personal_data.json` with your own data
-3. Update `ASSISTANT_NAME` and `CREATOR_NAME` in `config.py`
-4. Update the system prompt in `src/llm/assistant.py` — especially the identity section and the list of projects the assistant is NOT
-5. Rebuild the index: `python scripts/build_index.py`
+3. Replace `data/website_pages/publications.json` and `portfolios.json` with your own
+4. Update `ASSISTANT_NAME` and `CREATOR_NAME` in `config.py`
+5. Update the system prompt in `src/llm/assistant.py` — especially the identity section and the list of projects the assistant is NOT
+6. Rebuild the index: `python scripts/build_index.py`
