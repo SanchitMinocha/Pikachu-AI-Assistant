@@ -181,6 +181,25 @@
     ]
   },
 
+  "PhD Defense":{
+    "date": "2026-05-08",
+    "time": "11:00 AM PDT or 11:30 PM IST",
+    "duration": "45 minutes presentation + 15 minutes Q&A",
+    "title": "From Sediment to Storage: Tracking the World's Reservoirs",
+    "plain abstract": "Every major dam in the world is slowly filling up with mud — and almost nobody is tracking it. Rivers carry sediment downstream and deposit it in reservoirs over time, quietly eroding the water storage we rely on for drinking, farming, and electricity. This research uses satellite imagery and machine learning to monitor any reservoir across the globe — detecting this invisible loss without expensive on-the-ground surveys, and giving water managers the tools to plan before it's too late.",
+    "location": "ECE:303, Paul G Allen Center, University of Washington, Seattle, WA",
+    "directions": "Enter via main entrance: Go to the Paul G Allen Center / ECE Building main entrance on Stevens Way. Head inside and turn right: Head into the building and turn right. Find the elevator: Walk toward the end of the hallway. On your right, you'll see an elevator. Take elevator to Floor 3: Not 3M, just Floor 3. Exit and turn left: Step out and take a left. Continue down the hallway. The room is at the end of the hallway on your right. Look for the defense sign!",
+    "zoom_link": "<a href='https://washington.zoom.us/j/97867307714'>Join Zoom Meeting</a>",
+    "committee": [
+      "Dr. Faisal Hossain (Chair)",
+      "Dr. Erkan Istanbulluoglu",
+      "Dr. Bart Nijssen",
+      "Dr. Steven Walters (GSR)"
+    ],
+    "importance": "This defense is the culmination of Sanchit's PhD research, where he will present his work on global reservoir sedimentation monitoring using satellite data and machine learning. It is a significant milestone in his academic career and an opportunity to share his findings with the scientific community. Sanchit will be officially awarded his PhD degree after successfully defending his research in front of the committee. Be there for Sanchit on this important day!"
+
+  },
+
   "awards_and_recognition": [
     "Departmental Gold Medal – IIT Roorkee",
     "Annual Excellence Award – IIT Roorkee",
@@ -311,7 +330,7 @@
     },
     {
       "question": "How many siblings does Sanchit have?",
-      "answer": "Sanchit has 1 elder brother working as a Software Developer at Aristocrat Technologies."
+      "answer": "Sanchit has 1 elder brother, Arpit Minocha, working as a Software Developer at Aristocrat Technologies."
     }
   ]
 }
